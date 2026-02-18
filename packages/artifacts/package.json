@@ -1,7 +1,7 @@
 {
   "name": "@ai-sdk-tools/artifacts",
   "private": false,
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0",
   "description": "Advanced streaming interfaces for AI applications",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
-    "@ai-sdk/react": "beta",
+    "@ai-sdk/react": "^3.0.3",
     "@types/react": "^19.2.7",
     "typescript": "^5.9.3",
     "tsup": "^8.5.1",

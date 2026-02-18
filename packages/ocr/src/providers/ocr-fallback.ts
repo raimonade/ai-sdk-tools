@@ -7,7 +7,6 @@ let unpdfModule: any;
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   if (!unpdfModule) {
     try {
-      // @ts-expect-error - Optional dependency
       unpdfModule = await import("unpdf");
     } catch {
       throw new Error(
