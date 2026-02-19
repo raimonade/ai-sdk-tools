@@ -21,6 +21,10 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -41,14 +45,6 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build Packages
-        run: |
-          if [ "${{ steps.check-type.outputs.type }}" = "beta" ]; then
-            bun run build:beta
-          else
-            bun run build
-          fi
-
       - name: Check Release Type
         id: check-type
         run: |
@@ -64,6 +60,14 @@ jobs:
             echo "version_cmd=bun run version-packages" >> $GITHUB_OUTPUT
             echo "commit_msg=chore: release packages" >> $GITHUB_OUTPUT
             echo "title=chore: release packages" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Packages
+        run: |
+          if [ "${{ steps.check-type.outputs.type }}" = "beta" ]; then
+            bun run build:beta
+          else
+            bun run build
           fi
 
       - name: Enter Beta Mode (if beta release)
