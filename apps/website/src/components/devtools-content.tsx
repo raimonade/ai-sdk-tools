@@ -24,7 +24,7 @@ export function DevtoolsContent() {
             </p>
 
             {/* Terminal */}
-            <InstallScriptTabs packageName="@ai-sdk-tools/devtools" />
+            <InstallScriptTabs packageName="@raimonade/devtools" />
 
             {/* Used by */}
             <div className="space-y-6 max-w-xl">
@@ -132,7 +132,7 @@ export function DevtoolsContent() {
                   // biome-ignore lint/security/noDangerouslySetInnerHtml: we want to use dangerouslySetInnerHTML
                   dangerouslySetInnerHTML={{
                     __html: highlight(`// App.tsx - Add devtools to your app
-import { AIDevtools } from '@ai-sdk-tools/devtools'
+import { AIDevtools } from '@raimonade/devtools'
 
 function App() {
   return (
@@ -169,7 +169,7 @@ function App() {
                   // biome-ignore lint/security/noDangerouslySetInnerHtml: we want to use dangerouslySetInnerHTML
                   dangerouslySetInnerHTML={{
                     __html: highlight(`// Custom configuration
-import { AIDevtools } from '@ai-sdk-tools/devtools'
+import { AIDevtools } from '@raimonade/devtools'
 
 function App() {
   return (
@@ -204,10 +204,10 @@ function App() {
             <div className="text-sm flex items-center justify-between">
               <div>
                 <span className="text-secondary">git: (main)$ </span>
-                <span className="text-white">npm i @ai-sdk-tools/devtools</span>
+                <span className="text-white">npm i @raimonade/devtools</span>
               </div>
               <CopyButton
-                text="npm i @ai-sdk-tools/devtools"
+                text="npm i @raimonade/devtools"
                 className="ml-4 hover:text-white"
                 size={16}
               />

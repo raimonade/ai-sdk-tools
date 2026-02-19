@@ -1,10 +1,10 @@
-import { createLogger } from "@ai-sdk-tools/debug";
+import { createLogger } from "@raimonade/debug";
 import {
   DEFAULT_TEMPLATE,
   formatWorkingMemory,
   getWorkingMemoryInstructions,
   type MemoryConfig,
-} from "@ai-sdk-tools/memory";
+} from "@raimonade/memory";
 import {
   ToolLoopAgent as AISDKAgent,
   convertToModelMessages,

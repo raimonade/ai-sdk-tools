@@ -1,10 +1,10 @@
-# @ai-sdk-tools/ocr
+# @raimonade/ocr
 
 ## 1.1.0
 
 ### Minor Changes
 
-- Add new @ai-sdk-tools/ocr package for extracting structured data from invoices and receipts using AI SDK with intelligent provider fallback (Mistral → Gemini → OCR).
+- Add new @raimonade/ocr package for extracting structured data from invoices and receipts using AI SDK with intelligent provider fallback (Mistral → Gemini → OCR).
 
 ## 1.0.0
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ArtifactData } from "ai-sdk-tools/client";
+import type { ArtifactData } from "@raimonade/ai-sdk-tools/client";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 interface ArtifactVersionSelectProps {

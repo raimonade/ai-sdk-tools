@@ -1,5 +1,5 @@
 {
-  "name": "@ai-sdk-tools/example",
+  "name": "@raimonade/example",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,12 +11,12 @@
     "format": "biome format --write"
   },
   "dependencies": {
-    "@ai-sdk-tools/agents": "workspace:*",
-    "@ai-sdk-tools/artifacts": "workspace:*",
-    "@ai-sdk-tools/cache": "workspace:*",
-    "@ai-sdk-tools/devtools": "workspace:*",
-    "@ai-sdk-tools/memory": "workspace:*",
-    "@ai-sdk-tools/store": "workspace:*",
+    "@raimonade/agents": "workspace:*",
+    "@raimonade/artifacts": "workspace:*",
+    "@raimonade/cache": "workspace:*",
+    "@raimonade/devtools": "workspace:*",
+    "@raimonade/memory": "workspace:*",
+    "@raimonade/store": "workspace:*",
     "@ai-sdk/openai": "^3.0.1",
     "@ai-sdk/react": "^3.0.3",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -36,7 +36,7 @@
     "@upstash/ratelimit": "^2.0.7",
     "@xyflow/react": "^12.10.0",
     "ai": "^6.0.3",
-    "ai-sdk-tools": "workspace:*",
+    "@raimonade/ai-sdk-tools": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

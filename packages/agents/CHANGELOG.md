@@ -37,12 +37,12 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/debug@1.0.0
-  - @ai-sdk-tools/memory@1.0.0
+  - @raimonade/debug@1.0.0
+  - @raimonade/memory@1.0.0
 
 ### Patch Changes
 
 - Routine release.
 - Updated dependencies
-  - @ai-sdk-tools/debug@0.9.1
-  - @ai-sdk-tools/memory@0.9.1
+  - @raimonade/debug@0.9.1
+  - @raimonade/memory@0.9.1

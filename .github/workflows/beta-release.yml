@@ -53,6 +53,11 @@ jobs:
       - name: Version Beta Packages
         run: bun run version-packages:beta
 
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "@raimonade:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+
       - name: Create Beta Release Pull Request
         id: changesets
         uses: changesets/action@v1
@@ -63,7 +68,7 @@ jobs:
           title: "chore: release beta packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Exit Beta Mode
         if: always()

@@ -1,4 +1,4 @@
-# @ai-sdk-tools/memory
+# @raimonade/memory
 
 Persistent memory system for AI agents with built-in providers for development and production.
 
@@ -14,13 +14,13 @@ Persistent memory system for AI agents with built-in providers for development a
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/memory
+npm install @raimonade/memory
 # or
-yarn add @ai-sdk-tools/memory
+yarn add @raimonade/memory
 # or
-pnpm add @ai-sdk-tools/memory
+pnpm add @raimonade/memory
 # or
-bun add @ai-sdk-tools/memory
+bun add @raimonade/memory
 ```
 
 ### Optional Dependencies
@@ -28,6 +28,9 @@ bun add @ai-sdk-tools/memory
 ```bash
 # For Drizzle ORM provider (PostgreSQL, MySQL, or SQLite)
 npm install drizzle-orm
+
+# For Kysely provider (MSSQL/Azure SQL, and others)
+npm install kysely
 
 # For Upstash Redis provider (serverless/edge)
 npm install @upstash/redis
@@ -45,7 +48,7 @@ npm install ioredis
 Perfect for local development - works immediately, no setup needed.
 
 ```typescript
-import { InMemoryProvider } from "@ai-sdk-tools/memory";
+import { InMemoryProvider } from "@raimonade/memory/in-memory";
 
 const memory = new InMemoryProvider();
 
@@ -70,7 +73,7 @@ Works with PostgreSQL, MySQL, and SQLite via Drizzle ORM. Perfect if you already
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
-import { DrizzleProvider } from "@ai-sdk-tools/memory";
+ import { DrizzleProvider } from "@raimonade/memory/drizzle";
 
 // Define your schema
 const workingMemory = pgTable("working_memory", {
@@ -101,6 +104,80 @@ const memory = new DrizzleProvider(db, {
 
 **[Full Drizzle documentation →](./DRIZZLE.md)** - Includes PostgreSQL, MySQL, SQLite/Turso examples
 
+### Kysely Provider (Production - MSSQL/Azure SQL)
+
+Works with Kysely. Recommended for Azure SQL / SQL Server (store message content as JSON string in `NVARCHAR(MAX)`).
+
+```ts
+import type { Kysely } from "kysely";
+import { KyselyProvider } from "@raimonade/memory/kysely";
+
+interface DB {
+  working_memory: {
+    id: string;
+    scope: "chat" | "user";
+    chat_id: string | null;
+    user_id: string | null;
+    content: string;
+    updated_at: Date;
+  };
+  conversation_messages: {
+    chat_id: string;
+    user_id: string | null;
+    role: "user" | "assistant" | "system";
+    content: string;
+    timestamp: Date;
+  };
+  chats: {
+    chat_id: string;
+    user_id: string | null;
+    title: string | null;
+    created_at: Date;
+    updated_at: Date;
+    message_count: number;
+  };
+}
+
+export function createMemory(db: Kysely<DB>) {
+  return new KyselyProvider(db, {
+    workingMemory: {
+      table: "working_memory",
+      columns: {
+        id: "id",
+        scope: "scope",
+        chatId: "chat_id",
+        userId: "user_id",
+        content: "content",
+        updatedAt: "updated_at",
+      },
+    },
+    messages: {
+      table: "conversation_messages",
+      columns: {
+        chatId: "chat_id",
+        userId: "user_id",
+        role: "role",
+        content: "content",
+        timestamp: "timestamp",
+      },
+    },
+    chats: {
+      table: "chats",
+      columns: {
+        chatId: "chat_id",
+        userId: "user_id",
+        title: "title",
+        createdAt: "created_at",
+        updatedAt: "updated_at",
+        messageCount: "message_count",
+      },
+    },
+  });
+}
+```
+
+**[Full Kysely documentation →](./KYSELY.md)**
+
 ### Redis Provider (Production - Self-Hosted)
 
 Perfect for traditional Redis instances (self-hosted, Redis Cloud, AWS ElastiCache, etc.). Supports both `ioredis` and `redis` npm packages.
@@ -109,7 +186,7 @@ Perfect for traditional Redis instances (self-hosted, Redis Cloud, AWS ElastiCac
 
 ```typescript
 import Redis from "ioredis";
-import { RedisProvider } from "@ai-sdk-tools/memory/redis";
+import { RedisProvider } from "@raimonade/memory/redis";
 
 const redis = new Redis(process.env.REDIS_URL);
 const memory = new RedisProvider(redis);
@@ -119,7 +196,7 @@ const memory = new RedisProvider(redis);
 
 ```typescript
 import { createClient } from "redis";
-import { RedisProvider } from "@ai-sdk-tools/memory/redis";
+import { RedisProvider } from "@raimonade/memory/redis";
 
 const redis = createClient({ url: process.env.REDIS_URL });
 await redis.connect();
@@ -135,7 +212,7 @@ Perfect for edge and serverless environments. Uses HTTP REST API instead of dire
 
 ```typescript
 import { Redis } from "@upstash/redis";
-import { UpstashProvider } from "@ai-sdk-tools/memory/upstash";
+import { UpstashProvider } from "@raimonade/memory/upstash";
 
 const redis = Redis.fromEnv();
 const memory = new UpstashProvider(redis, {
@@ -151,7 +228,7 @@ const memory = new UpstashProvider(redis, {
 ## Usage with Agents
 
 ```typescript
-import { InMemoryProvider } from "@ai-sdk-tools/memory";
+import { InMemoryProvider } from "@raimonade/memory";
 
 const appContext = buildAppContext({
   userId: "user-123",
@@ -221,7 +298,7 @@ import type {
   WorkingMemory,
   ConversationMessage,
   MemoryScope,
-} from "@ai-sdk-tools/memory";
+} from "@raimonade/memory";
 
 class MyProvider implements MemoryProvider {
   async getWorkingMemory(params: {

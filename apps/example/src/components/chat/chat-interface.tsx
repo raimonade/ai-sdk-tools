@@ -1,7 +1,7 @@
 "use client";
 
 import { DefaultChatTransport, generateId } from "ai";
-import { useArtifacts, useChat, useDataPart } from "ai-sdk-tools/client";
+import { useArtifacts, useChat, useDataPart } from "@raimonade/ai-sdk-tools/client";
 import { parseAsString, useQueryState } from "nuqs";
 import { type RefObject, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";

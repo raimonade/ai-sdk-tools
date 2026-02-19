@@ -1,4 +1,4 @@
-import type { MemoryConfig } from "@ai-sdk-tools/memory";
+import type { MemoryConfig } from "@raimonade/memory";
 import type {
   IdGenerator,
   LanguageModel,
@@ -335,7 +335,7 @@ export interface AgentStreamOptionsUI<
  *
  * @example Extending with custom data parts
  * ```typescript
- * declare module '@ai-sdk-tools/agents' {
+ * declare module '@raimonade/agents' {
  *   interface AgentDataParts {
  *     'custom-data': {
  *       value: string;
@@ -382,7 +382,7 @@ export interface AgentDataParts {
  *
  * @example Basic usage
  * ```typescript
- * import type { AgentUIMessage } from '@ai-sdk-tools/agents';
+ * import type { AgentUIMessage } from '@raimonade/agents';
  *
  * const { messages } = useChat<AgentUIMessage>({
  *   api: '/api/chat',

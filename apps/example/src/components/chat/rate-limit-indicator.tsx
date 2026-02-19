@@ -1,6 +1,6 @@
 "use client";
 
-import { useDataPart } from "ai-sdk-tools/client";
+import { useDataPart } from "@raimonade/ai-sdk-tools/client";
 import { toast } from "sonner";
 
 interface RateLimitData {

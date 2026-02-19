@@ -1,4 +1,4 @@
-# @ai-sdk-tools/store
+# @raimonade/store
 
 A high-performance drop-in replacement for @ai-sdk/react with advanced state management, built-in optimizations, and zero configuration required.
 
@@ -15,9 +15,9 @@ A high-performance drop-in replacement for @ai-sdk/react with advanced state man
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/store
+npm install @raimonade/store
 # or
-bun add @ai-sdk-tools/store
+bun add @raimonade/store
 ```
 
 ## Debug Configuration
@@ -43,7 +43,7 @@ By default, debug logging is disabled unless `DEBUG=true` is set.
 ### 1. Wrap Your App
 
 ```tsx
-import { Provider } from '@ai-sdk-tools/store';
+import { Provider } from '@raimonade/store';
 
 function App() {
   return (
@@ -57,7 +57,7 @@ function App() {
 ### 2. Use Chat Hooks
 
 ```tsx
-import { useChat, useChatMessages } from '@ai-sdk-tools/store';
+import { useChat, useChatMessages } from '@raimonade/store';
 
 function ChatComponent() {
   // Same API as @ai-sdk/react, but 3-5x faster!
@@ -150,7 +150,7 @@ function Chat() {
 
 ### After:
 ```tsx
-import { Provider, useChat } from '@ai-sdk-tools/store';
+import { Provider, useChat } from '@raimonade/store';
 
 function App() {
   return (
@@ -171,7 +171,7 @@ function Chat() {
 
 ## Performance Benchmarks
 
-| Scenario | @ai-sdk/react | @ai-sdk-tools/store | Improvement |
+| Scenario | @ai-sdk/react | @raimonade/store | Improvement |
 |----------|---------------|---------------------|-------------|
 | 1000 messages | 120ms | 35ms | **3.4x faster** |
 | Message lookup | O(n) | O(1) | **10-100x faster** |

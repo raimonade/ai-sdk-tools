@@ -1,4 +1,4 @@
-# @ai-sdk-tools/store
+# @raimonade/store
 
 ## 2.0.0
 

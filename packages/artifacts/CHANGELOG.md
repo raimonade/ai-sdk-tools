@@ -1,4 +1,4 @@
-# @ai-sdk-tools/artifacts
+# @raimonade/artifacts
 
 ## 2.0.0
 
@@ -218,21 +218,21 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@0.2.0-beta.3
+  - @raimonade/store@0.2.0-beta.3
 
 ## 0.5.0-beta.2
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@0.1.3-beta.2
+  - @raimonade/store@0.1.3-beta.2
 
 ## 0.5.0-beta.1
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@0.1.3-beta.1
+  - @raimonade/store@0.1.3-beta.1
 
 ## 0.5.0-beta.0
 
@@ -267,7 +267,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@0.1.3-beta.0
+  - @raimonade/store@0.1.3-beta.0
 
 ## 0.4.0
 
@@ -371,7 +371,7 @@
 - Updated dependencies
 - Updated dependencies
 - Updated dependencies
-  - @ai-sdk-tools/store@0.1.2
+  - @raimonade/store@0.1.2
 
 ## 0.2.3-beta.0
 
@@ -386,4 +386,4 @@
 
 - Test changeset for version management workflow
 - Updated dependencies
-  - @ai-sdk-tools/store@0.1.1
+  - @raimonade/store@0.1.1

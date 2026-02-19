@@ -44,3 +44,7 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Local tooling
+.npmrc
+.opencode/

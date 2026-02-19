@@ -170,7 +170,7 @@ function generatePackages() {
   return Object.entries(packageDependencies).map(([packageName, deps]) => {
     const dependencies = {};
     deps.forEach((dep) => {
-      dependencies[`@ai-sdk-tools/${dep}`] = `^${getPackageVersion(dep)}`;
+      dependencies[`@raimonade/${dep}`] = `^${getPackageVersion(dep)}`;
     });
     return { name: packageName, dependencies };
   });

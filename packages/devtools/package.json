@@ -1,5 +1,5 @@
 {
-  "name": "@ai-sdk-tools/devtools",
+  "name": "@raimonade/devtools",
   "version": "2.0.0",
   "description": "AI development tools for debugging and monitoring AI SDKs streams",
   "main": "./dist/index.js",
@@ -40,10 +40,10 @@
     "@ai-sdk/react": ">=2.0.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
-    "@ai-sdk-tools/store": "*"
+    "@raimonade/store": "*"
   },
   "peerDependenciesMeta": {
-    "@ai-sdk-tools/store": {
+    "@raimonade/store": {
       "optional": true
     }
   },
@@ -55,7 +55,7 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "@ai-sdk/react": "^3.0.3",
-    "@ai-sdk-tools/store": "workspace:*"
+    "@raimonade/store": "workspace:*"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -70,13 +70,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git"
+    "url": "https://github.com/raimonade/ai-sdk-tools.git"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools#readme",
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

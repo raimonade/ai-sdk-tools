@@ -1,4 +1,4 @@
-# @ai-sdk-tools/cache
+# @raimonade/cache
 
 [![npm version](https://badge.fury.io/js/@ai-sdk-tools%2Fcache.svg)](https://badge.fury.io/js/@ai-sdk-tools%2Fcache)
 
@@ -21,9 +21,9 @@ Caching provides:
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/cache
+npm install @raimonade/cache
 # or
-bun add @ai-sdk-tools/cache
+bun add @raimonade/cache
 ```
 
 ## Quick Start
@@ -32,7 +32,7 @@ bun add @ai-sdk-tools/cache
 
 ```typescript
 import { tool } from 'ai';
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 import { z } from 'zod';
 
 // Your expensive tool
@@ -68,7 +68,7 @@ const result = await generateText({
 
 ```typescript
 import { Redis } from "@upstash/redis";
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 
 // Just pass your Redis client!
 const cached = createCached({
@@ -83,7 +83,7 @@ const weatherTool = cached(expensiveWeatherTool);
 
 ```typescript
 import Redis from "redis";
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 
 const cached = createCached({
   cache: Redis.createClient({ url: "redis://localhost:6379" }),
@@ -96,7 +96,7 @@ const cached = createCached({
 
 ```typescript
 import IORedis from "ioredis";
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 
 const cached = createCached({
   cache: new IORedis("redis://localhost:6379"),
@@ -138,7 +138,7 @@ const cached = createCached({
 For apps with user/team context, just add `getContext` to the cache config:
 
 ```typescript
-import { cached } from '@ai-sdk-tools/cache';
+import { cached } from '@raimonade/cache';
 // Your app's context system (could be React context, global state, etc.)
 
 const burnRateAnalysisTool = tool({
@@ -177,7 +177,7 @@ For consistent setup across your app, create a configured cache function:
 
 ```typescript
 // src/lib/cache.ts
-import { cached as baseCached, createCacheBackend } from '@ai-sdk-tools/cache';
+import { cached as baseCached, createCacheBackend } from '@raimonade/cache';
 import { getContext } from '@/ai/context';
 
 // Create cache backend
@@ -211,7 +211,7 @@ export const myTool = cached(originalTool);
 ## Streaming Tools with Artifacts
 
 ```typescript
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 
 // Complex streaming tool with artifacts
 const burnRateAnalysis = tool({
@@ -249,7 +249,7 @@ const cachedAnalysis = cached(burnRateAnalysis);
 ## Multiple Tools
 
 ```typescript
-import { cacheTools } from '@ai-sdk-tools/cache';
+import { cacheTools } from '@raimonade/cache';
 
 // Cache multiple tools at once
 const { weather, calculator, database } = cacheTools({

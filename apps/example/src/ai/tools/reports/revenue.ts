@@ -1,4 +1,4 @@
-import { getWriter } from "@ai-sdk-tools/artifacts";
+import { getWriter } from "@raimonade/artifacts";
 import { tool } from "ai";
 import { z } from "zod";
 import { RevenueArtifact } from "@/ai/artifacts/revenue";

@@ -70,7 +70,12 @@ jobs:
         if: steps.check-type.outputs.type == 'beta'
         run: bun run changeset:beta
 
-      - name: Create Release Pull Request or Publish to npm
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "@raimonade:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+
+      - name: Create Release Pull Request or Publish to GitHub Packages
         id: changesets
         uses: changesets/action@v1
         with:
@@ -80,7 +85,7 @@ jobs:
           title: ${{ steps.check-type.outputs.title }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Exit Beta Mode (if beta release)
         if: always() && steps.check-type.outputs.type == 'beta'

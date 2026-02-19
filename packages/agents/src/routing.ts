@@ -5,7 +5,7 @@
  */
 
 import type { Agent } from "./types.js";
-import { createLogger } from "@ai-sdk-tools/debug";
+import { createLogger } from "@raimonade/debug";
 
 const logger = createLogger('ROUTING');
 

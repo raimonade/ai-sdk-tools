@@ -1,6 +1,6 @@
 "use client";
 
-import { useChatId } from "@ai-sdk-tools/store";
+import { useChatId } from "@raimonade/store";
 import type { ChatStatus } from "ai";
 import { GlobeIcon } from "lucide-react";
 import { type RefObject, useEffect, useState } from "react";

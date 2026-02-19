@@ -1,5 +1,5 @@
 /**
- * @ai-sdk-tools/cache
+ * @raimonade/cache
  * 
  * Simple caching wrapper for AI SDK tools. Cache expensive tool executions 
  * with zero configuration.

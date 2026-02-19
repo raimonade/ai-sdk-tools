@@ -1,11 +1,11 @@
-# @ai-sdk-tools/agents
+# @raimonade/agents
 
 [![npm version](https://badge.fury.io/js/@ai-sdk-tools%2Fagents.svg)](https://badge.fury.io/js/@ai-sdk-tools%2Fagents)
 
 Multi-agent orchestration for AI SDK v5. Build intelligent workflows with specialized agents, automatic handoffs, and seamless coordination. Works with any AI provider.
 
 ```bash
-npm install @ai-sdk-tools/agents ai zod
+npm install @raimonade/agents ai zod
 ```
 
 ## Why Multi-Agent Systems?
@@ -53,7 +53,7 @@ This approach:
 - Reduces network payload (no need to send full history)
 - Provides consistent context across requests
 - Enables server-side control of context window size via `lastMessages` config
-- Integrates seamlessly with `@ai-sdk-tools/memory` providers
+- Integrates seamlessly with `@raimonade/memory` providers
 
 ### Handoffs
 Agents can transfer control to other agents while preserving conversation context. Handoffs include the reason for transfer and any relevant context.
@@ -73,7 +73,7 @@ Automatic routing between agents based on:
 The package now includes OpenAI-style context management with `AgentRunContext` and `HandoffInputFilter` support:
 
 ```typescript
-import { Agent, handoff, removeAllTools, keepLastNMessages } from '@ai-sdk-tools/agents';
+import { Agent, handoff, removeAllTools, keepLastNMessages } from '@raimonade/agents';
 
 // Configure handoffs with context filtering
 const specialist = new Agent({
@@ -137,7 +137,7 @@ When enabled:
 ### Basic: Single Agent
 
 ```typescript
-import { Agent } from '@ai-sdk-tools/agents';
+import { Agent } from '@raimonade/agents';
 import { openai } from '@ai-sdk/openai';
 
 const agent = new Agent({
@@ -157,7 +157,7 @@ console.log(result.text); // "4"
 ### Handoffs: Two Specialists
 
 ```typescript
-import { Agent } from '@ai-sdk-tools/agents';
+import { Agent } from '@raimonade/agents';
 import { openai } from '@ai-sdk/openai';
 
 // Create specialized agents
@@ -230,7 +230,7 @@ For Next.js route handlers and real-time UI updates:
 
 ```typescript
 // app/api/chat/route.ts
-import { Agent } from '@ai-sdk-tools/agents';
+import { Agent } from '@raimonade/agents';
 import { openai } from '@ai-sdk/openai';
 
 const supportAgent = new Agent({
@@ -430,7 +430,7 @@ const agent = new Agent({
 Here's a real-world example: determining if a user can afford a Tesla Model Y by combining web research and financial analysis:
 
 ```typescript
-import { Agent, handoff, removeAllTools, keepLastNMessages } from '@ai-sdk-tools/agents';
+import { Agent, handoff, removeAllTools, keepLastNMessages } from '@raimonade/agents';
 import { openai } from '@ai-sdk/openai';
 
 // Research Specialist - gathers current product information
@@ -608,12 +608,12 @@ type AgentEvent =
 
 ## Integration with Other Packages
 
-### With @ai-sdk-tools/cache
+### With @raimonade/cache
 
 Cache expensive tool calls across agents:
 
 ```typescript
-import { createCached } from '@ai-sdk-tools/cache';
+import { createCached } from '@raimonade/cache';
 import { Redis } from '@upstash/redis';
 
 const cached = createCached({ cache: Redis.fromEnv() });
@@ -628,12 +628,12 @@ const agent = new Agent({
 });
 ```
 
-### With @ai-sdk-tools/artifacts
+### With @raimonade/artifacts
 
 Stream structured artifacts from agents:
 
 ```typescript
-import { artifact } from '@ai-sdk-tools/artifacts';
+import { artifact } from '@raimonade/artifacts';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -671,12 +671,12 @@ const reportAgent = new Agent({
 });
 ```
 
-### With @ai-sdk-tools/devtools
+### With @raimonade/devtools
 
 Debug agent execution in development:
 
 ```typescript
-import { AIDevTools } from '@ai-sdk-tools/devtools';
+import { AIDevTools } from '@raimonade/devtools';
 
 const agent = new Agent({
   name: 'Debug Agent',

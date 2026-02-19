@@ -1,5 +1,5 @@
 {
-  "name": "@ai-sdk-tools/agents",
+  "name": "@raimonade/agents",
   "version": "2.0.0",
   "description": "Multi-agent orchestration system built on AI SDK v6 - handoffs, routing, and coordination for any AI provider",
   "keywords": [
@@ -19,13 +19,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git",
+    "url": "https://github.com/raimonade/ai-sdk-tools.git",
     "directory": "packages/agents"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools/tree/main/packages/agents#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools/tree/main/packages/agents#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -54,10 +54,10 @@
     "zod": "^3.25.76 || ^4.1.8"
   },
   "peerDependenciesMeta": {
-    "@ai-sdk-tools/artifacts": {
+    "@raimonade/artifacts": {
       "optional": true
     },
-    "@ai-sdk-tools/cache": {
+    "@raimonade/cache": {
       "optional": true
     }
   },
@@ -67,10 +67,11 @@
     "typescript": "^5.9.3",
     "zod": "^4.2.1",
     "ai": "^6.0.3",
-    "@ai-sdk-tools/debug": "workspace:*",
-    "@ai-sdk-tools/memory": "workspace:*"
+    "@raimonade/debug": "workspace:*",
+    "@raimonade/memory": "workspace:*"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

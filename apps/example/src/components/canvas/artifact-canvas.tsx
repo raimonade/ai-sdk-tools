@@ -1,6 +1,6 @@
 "use client";
 
-import { useArtifacts } from "ai-sdk-tools/client";
+import { useArtifacts } from "@raimonade/ai-sdk-tools/client";
 import { parseAsString, useQueryState } from "nuqs";
 import { ArtifactTypeTabs } from "./artifact-type-tabs";
 import { BalanceSheetCanvas } from "./balance-sheet-canvas";

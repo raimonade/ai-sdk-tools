@@ -1,5 +1,5 @@
 {
-  "name": "@ai-sdk-tools/cache",
+  "name": "@raimonade/cache",
   "version": "2.0.0",
   "description": "Simple caching wrapper for AI SDK tools - cache expensive tool executions with zero configuration",
   "keywords": [
@@ -16,13 +16,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git",
+    "url": "https://github.com/raimonade/ai-sdk-tools.git",
     "directory": "packages/cache"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools/tree/main/packages/cache#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools/tree/main/packages/cache#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -49,7 +49,7 @@
     "ai": "^6.0.3"
   },
   "peerDependenciesMeta": {
-    "@ai-sdk-tools/artifacts": {
+    "@raimonade/artifacts": {
       "optional": true
     }
   },
@@ -60,9 +60,10 @@
     "vitest": "^4.0.16",
     "zod": "^4.2.1",
     "ai": "^6.0.3",
-    "@ai-sdk-tools/artifacts": "workspace:*"
+    "@raimonade/artifacts": "workspace:*"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   },
   "dependencies": {}

@@ -1,4 +1,4 @@
-# @ai-sdk-tools/debug
+# @raimonade/debug
 
 ## 2.0.0
 

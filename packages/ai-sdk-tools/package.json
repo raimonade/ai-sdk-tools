@@ -1,5 +1,5 @@
 {
-  "name": "ai-sdk-tools",
+  "name": "@raimonade/ai-sdk-tools",
   "version": "2.0.0",
   "description": "Complete toolkit for building AI applications with the Vercel AI SDK - agents, state management, caching, artifacts, devtools, and memory",
   "keywords": [
@@ -28,13 +28,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git",
+    "url": "https://github.com/raimonade/ai-sdk-tools.git",
     "directory": "packages/ai-sdk-tools"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -97,14 +97,15 @@
     "typescript": "^5.9.3",
     "zod": "^4.2.1",
     "ai": "^6.0.3",
-    "@ai-sdk-tools/agents": "workspace:*",
-    "@ai-sdk-tools/artifacts": "workspace:*",
-    "@ai-sdk-tools/cache": "workspace:*",
-    "@ai-sdk-tools/devtools": "workspace:*",
-    "@ai-sdk-tools/memory": "workspace:*",
-    "@ai-sdk-tools/store": "workspace:*"
+    "@raimonade/agents": "workspace:*",
+    "@raimonade/artifacts": "workspace:*",
+    "@raimonade/cache": "workspace:*",
+    "@raimonade/devtools": "workspace:*",
+    "@raimonade/memory": "workspace:*",
+    "@raimonade/store": "workspace:*"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

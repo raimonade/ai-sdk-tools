@@ -5,6 +5,27 @@ import { highlight } from "sugar-high";
 import { CopyButton } from "../copy-button";
 import { InstallScriptTabs } from "../install-script-tabs";
 
+function CodeBlock(props: {
+  code: string;
+  className?: string;
+  scroll?: boolean;
+}) {
+  return (
+    <div
+      className={`border border-[#3c3c3c] p-6${props.scroll ? " overflow-y-auto" : ""}${
+        props.className ? ` ${props.className}` : ""
+      }`}
+    >
+      <pre className="text-xs font-mono leading-relaxed" suppressHydrationWarning>
+        <code
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: highlight() returns HTML
+          dangerouslySetInnerHTML={{ __html: highlight(props.code) }}
+        />
+      </pre>
+    </div>
+  );
+}
+
 export default function MemoryDocsContent() {
   return (
     <main className="min-h-screen text-[#d4d4d4] font-[family-name:var(--font-geist-mono)]">
@@ -21,11 +42,11 @@ export default function MemoryDocsContent() {
               and chat persistence with a simple 4-method interface.
               <strong className="text-[#d4d4d4]">
                 {" "}
-                Required dependency for @ai-sdk-tools/agents.
+                Required dependency for @raimonade/agents.
               </strong>
             </p>
 
-            <InstallScriptTabs packageName="@ai-sdk-tools/memory" />
+            <InstallScriptTabs packageName="@raimonade/memory" />
           </div>
         </section>
 
@@ -46,8 +67,8 @@ export default function MemoryDocsContent() {
                 <span className="text-xs text-secondary mt-1">•</span>
                 <div>
                   <p className="text-sm font-medium mb-1">
-                    Built-in Providers - InMemory, Drizzle ORM, and Upstash
-                    included
+                    Built-in Providers - InMemory, Drizzle ORM, Kysely, Redis,
+                    and Upstash included
                   </p>
                 </div>
               </div>
@@ -99,15 +120,12 @@ export default function MemoryDocsContent() {
               Perfect for local development - works immediately, no setup
               needed.
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    highlight(`import { InMemoryProvider } from '@ai-sdk-tools/memory/in-memory'
-import { Agent } from '@ai-sdk-tools/agents'
-
-const memory = new InMemoryProvider()
+            <CodeBlock
+              className="mb-12"
+              code={`import { InMemoryProvider } from '@raimonade/memory/in-memory'
+ import { Agent } from '@raimonade/agents'
+ 
+ const memory = new InMemoryProvider()
 
 // Use with agents
 const agent = new Agent({
@@ -129,11 +147,8 @@ const agent = new Agent({
       generateTitle: true,
     }
   },
-})`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+})`}
+            />
           </div>
         </section>
 
@@ -149,15 +164,12 @@ const agent = new Agent({
               Works with PostgreSQL, MySQL, and SQLite via Drizzle ORM. Perfect
               if you already use Drizzle in your project.
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-8">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    highlight(`import { drizzle } from 'drizzle-orm/vercel-postgres'
-import { sql } from '@vercel/postgres'
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { DrizzleProvider } from '@ai-sdk-tools/memory/drizzle'
+            <CodeBlock
+              className="mb-8"
+              code={`import { drizzle } from 'drizzle-orm/vercel-postgres'
+ import { sql } from '@vercel/postgres'
+ import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+ import { DrizzleProvider } from '@raimonade/memory/drizzle'
 
 // Define your schema
 const workingMemory = pgTable('working_memory', {
@@ -178,19 +190,16 @@ const messages = pgTable('conversation_messages', {
   timestamp: timestamp('timestamp').notNull(),
 })
 
-// Initialize
-const db = drizzle(sql)
-const memory = new DrizzleProvider(db, {
-  workingMemoryTable: workingMemory,
-  messagesTable: messages,
-})`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+ // Initialize
+ const db = drizzle(sql)
+ const memory = new DrizzleProvider(db, {
+   workingMemoryTable: workingMemory,
+   messagesTable: messages,
+})`}
+            />
             <p className="text-xs text-secondary mb-12">
               <a
-                href="https://github.com/midday-ai/ai-sdk-tools/blob/main/packages/memory/DRIZZLE.md"
+                href="https://github.com/raimonade/ai-sdk-tools/blob/main/packages/memory/DRIZZLE.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[#d4d4d4] underline"
@@ -206,19 +215,101 @@ const memory = new DrizzleProvider(db, {
             <p className="text-sm text-secondary mb-6 leading-relaxed">
               Perfect for edge and serverless environments.
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`import { Redis } from '@upstash/redis'
-import { UpstashProvider } from '@ai-sdk-tools/memory/upstash'
+            <CodeBlock
+              className="mb-12"
+              code={`import { Redis } from '@upstash/redis'
+import { UpstashProvider } from '@raimonade/memory/upstash'
 
 const redis = Redis.fromEnv()
-const memory = new UpstashProvider(redis)`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+const memory = new UpstashProvider(redis)`}
+            />
+
+            <h3 className="text-lg font-medium mb-4">
+              Kysely Provider (Azure SQL / MSSQL)
+            </h3>
+            <p className="text-sm text-secondary mb-6 leading-relaxed">
+              Works with Kysely. Recommended for Azure SQL / SQL Server (store
+              message content as JSON string in NVARCHAR(MAX)).
+            </p>
+            <CodeBlock
+              className="mb-8"
+              code={`import type { Kysely } from 'kysely'
+import { KyselyProvider } from '@raimonade/memory/kysely'
+
+interface DB {
+  working_memory: {
+    id: string
+    scope: 'chat' | 'user'
+    chat_id: string | null
+    user_id: string | null
+    content: string
+    updated_at: Date
+  }
+  conversation_messages: {
+    chat_id: string
+    user_id: string | null
+    role: 'user' | 'assistant' | 'system'
+    content: string
+    timestamp: Date
+  }
+  chats: {
+    chat_id: string
+    user_id: string | null
+    title: string | null
+    created_at: Date
+    updated_at: Date
+    message_count: number
+  }
+}
+
+export function createMemory(db: Kysely<DB>) {
+  return new KyselyProvider(db, {
+    workingMemory: {
+      table: 'working_memory',
+      columns: {
+        id: 'id',
+        scope: 'scope',
+        chatId: 'chat_id',
+        userId: 'user_id',
+        content: 'content',
+        updatedAt: 'updated_at',
+      },
+    },
+    messages: {
+      table: 'conversation_messages',
+      columns: {
+        chatId: 'chat_id',
+        userId: 'user_id',
+        role: 'role',
+        content: 'content',
+        timestamp: 'timestamp',
+      },
+    },
+    chats: {
+      table: 'chats',
+      columns: {
+        chatId: 'chat_id',
+        userId: 'user_id',
+        title: 'title',
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+        messageCount: 'message_count',
+      },
+    },
+  })
+  })
+ }`}
+            />
+            <p className="text-xs text-secondary mb-12">
+              <a
+                href="https://github.com/raimonade/ai-sdk-tools/blob/main/packages/memory/KYSELY.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#d4d4d4] underline"
+              >
+                Full Kysely documentation
+              </a>
+            </p>
           </div>
         </section>
 
@@ -234,7 +325,7 @@ const memory = new UpstashProvider(redis)`),
                 href="/docs/agents"
                 className="text-[#d4d4d4] hover:underline"
               >
-                @ai-sdk-tools/agents
+                @raimonade/agents
               </Link>
               . The agent automatically handles:
             </p>
@@ -263,13 +354,10 @@ const memory = new UpstashProvider(redis)`),
               </div>
             </div>
 
-            <div className="border border-[#3c3c3c] p-6 mb-8">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    highlight(`import { Agent } from '@ai-sdk-tools/agents'
-import { DrizzleProvider } from '@ai-sdk-tools/memory/drizzle'
+            <CodeBlock
+              className="mb-8"
+              code={`import { Agent } from '@raimonade/agents'
+ import { DrizzleProvider } from '@raimonade/memory/drizzle'
 
 const agent = new Agent({
   name: 'Financial Assistant',
@@ -312,11 +400,8 @@ export async function POST(req: Request) {
       // ... other context
     }
   })
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+ }`}
+            />
           </div>
         </section>
 
@@ -332,36 +417,26 @@ export async function POST(req: Request) {
               Memory is tied to a specific conversation. Each chat has its own
               working memory.
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`workingMemory: {
+            <CodeBlock
+              className="mb-12"
+              code={`workingMemory: {
   enabled: true,
   scope: 'chat',
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
 
             <h3 className="text-lg font-medium mb-4">User Scope</h3>
             <p className="text-sm text-secondary mb-6 leading-relaxed">
               Memory persists across all conversations for a user. Useful for
               learning long-term preferences.
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`workingMemory: {
+            <CodeBlock
+              className="mb-12"
+              code={`workingMemory: {
   enabled: true,
   scope: 'user',
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
           </div>
         </section>
 
@@ -376,11 +451,9 @@ export async function POST(req: Request) {
             <p className="text-sm text-secondary mb-6 leading-relaxed">
               All providers implement this simple 4-method interface:
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`interface MemoryProvider {
+            <CodeBlock
+              className="mb-12"
+              code={`interface MemoryProvider {
   // Get working memory for a chat or user
   getWorkingMemory(params: {
     chatId?: string
@@ -404,18 +477,13 @@ export async function POST(req: Request) {
     chatId: string
     limit?: number
   }): Promise<ConversationMessage[]>
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
 
             <h3 className="text-lg font-medium mb-4">Types</h3>
-            <div className="border border-[#3c3c3c] p-6 mb-12">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`interface WorkingMemory {
+            <CodeBlock
+              className="mb-12"
+              code={`interface WorkingMemory {
   content: string
   updatedAt: Date
 }
@@ -428,11 +496,8 @@ interface ConversationMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: Date
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
           </div>
         </section>
 
@@ -444,16 +509,14 @@ interface ConversationMessage {
               Implement your own memory backend by following the MemoryProvider
               interface:
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-8">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`import type { 
+            <CodeBlock
+              className="mb-8"
+              code={`import type { 
   MemoryProvider, 
   WorkingMemory, 
   ConversationMessage,
   MemoryScope 
-} from '@ai-sdk-tools/memory'
+} from '@raimonade/memory'
 
 class MyCustomProvider implements MemoryProvider {
   async getWorkingMemory(params: {
@@ -499,11 +562,8 @@ class MyCustomProvider implements MemoryProvider {
   }): Promise<ConversationMessage[]> {
     return await myDb.getMessages(params.chatId, params.limit)
   }
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
           </div>
         </section>
 
@@ -514,14 +574,12 @@ class MyCustomProvider implements MemoryProvider {
             <p className="text-sm text-secondary mb-6 leading-relaxed">
               Full example showing memory integration with agents:
             </p>
-            <div className="border border-[#3c3c3c] p-6 mb-8">
-              <pre
-                className="text-xs font-mono leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: highlight(`// app/api/chat/route.ts
-import { Agent } from '@ai-sdk-tools/agents'
-import { DrizzleProvider } from '@ai-sdk-tools/memory/drizzle'
-import { openai } from '@ai-sdk/openai'
+            <CodeBlock
+              className="mb-8"
+              code={`// app/api/chat/route.ts
+ import { Agent } from '@raimonade/agents'
+ import { DrizzleProvider } from '@raimonade/memory/drizzle'
+ import { openai } from '@ai-sdk/openai'
 
 const memory = new DrizzleProvider(db)
 
@@ -559,7 +617,7 @@ export async function POST(req: Request) {
 }
 
 // Client usage
-import { useChat } from '@ai-sdk-tools/store'
+import { useChat } from '@raimonade/store'
 
 function ChatComponent() {
   const { messages, sendMessage } = useChat({
@@ -575,11 +633,8 @@ function ChatComponent() {
       },
     }),
   })
-}`),
-                }}
-                suppressHydrationWarning
-              />
-            </div>
+}`}
+            />
           </div>
         </section>
 
@@ -593,7 +648,7 @@ function ChatComponent() {
               ← Agents
             </Link>
             <Link
-              href="https://github.com/midday-ai/ai-sdk-tools/tree/main/packages/memory"
+              href="https://github.com/raimonade/ai-sdk-tools/tree/main/packages/memory"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-secondary hover:text-[#d4d4d4] transition-colors"

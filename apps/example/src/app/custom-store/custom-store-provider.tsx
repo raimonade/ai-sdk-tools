@@ -4,7 +4,7 @@ import {
   Provider as ChatProvider,
   ChatStoreContext,
   createChatStoreCreator,
-} from "@ai-sdk-tools/store";
+} from "@raimonade/store";
 import type { UIMessage } from "@ai-sdk/react";
 import { devtools, subscribeWithSelector } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
