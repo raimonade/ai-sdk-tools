@@ -11,9 +11,9 @@
     "format": "biome format --write"
   },
   "dependencies": {
-    "@raimonade/artifacts": "workspace:*",
-    "@raimonade/devtools": "workspace:*",
-    "@raimonade/store": "workspace:*",
+    "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+    "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+    "@raimonade/ai-sdk-tools-store": "workspace:*",
     "@ai-sdk/openai": "^3.0.1",
     "@openpanel/nextjs": "^1.0.16",
     "ai": "^6.0.3",

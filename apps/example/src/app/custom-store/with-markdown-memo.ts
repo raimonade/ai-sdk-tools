@@ -6,7 +6,7 @@ import {
   type MarkdownCacheEntry,
   precomputeMarkdownForAllMessages,
 } from "@/app/custom-store/markdown-cache";
-import type { StoreState as BaseChatStoreState } from "@raimonade/store";
+import type { StoreState as BaseChatStoreState } from "@raimonade/ai-sdk-tools-store";
 
 export interface MarkdownMemoAugmentedState<UI_MESSAGE extends UIMessage>
   extends BaseChatStoreState<UI_MESSAGE> {

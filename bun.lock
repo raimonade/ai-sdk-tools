@@ -31,13 +31,13 @@
         "@radix-ui/react-slot": "^1.2.4",
         "@radix-ui/react-tooltip": "^1.2.8",
         "@radix-ui/react-use-controllable-state": "^1.2.2",
-        "@raimonade/agents": "workspace:*",
         "@raimonade/ai-sdk-tools": "workspace:*",
-        "@raimonade/artifacts": "workspace:*",
-        "@raimonade/cache": "workspace:*",
-        "@raimonade/devtools": "workspace:*",
-        "@raimonade/memory": "workspace:*",
-        "@raimonade/store": "workspace:*",
+        "@raimonade/ai-sdk-tools-agents": "workspace:*",
+        "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+        "@raimonade/ai-sdk-tools-cache": "workspace:*",
+        "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+        "@raimonade/ai-sdk-tools-memory": "workspace:*",
+        "@raimonade/ai-sdk-tools-store": "workspace:*",
         "@upstash/ratelimit": "^2.0.7",
         "@xyflow/react": "^12.10.0",
         "ai": "^6.0.3",
@@ -93,9 +93,9 @@
       "dependencies": {
         "@ai-sdk/openai": "^3.0.1",
         "@openpanel/nextjs": "^1.0.16",
-        "@raimonade/artifacts": "workspace:*",
-        "@raimonade/devtools": "workspace:*",
-        "@raimonade/store": "workspace:*",
+        "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+        "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+        "@raimonade/ai-sdk-tools-store": "workspace:*",
         "ai": "^6.0.3",
         "geist": "^1.5.1",
         "next": "16.0.3",
@@ -115,11 +115,11 @@
       },
     },
     "packages/agents": {
-      "name": "@raimonade/agents",
+      "name": "@raimonade/ai-sdk-tools-agents",
       "version": "2.0.0",
       "devDependencies": {
-        "@raimonade/debug": "workspace:*",
-        "@raimonade/memory": "workspace:*",
+        "@raimonade/ai-sdk-tools-debug": "workspace:*",
+        "@raimonade/ai-sdk-tools-memory": "workspace:*",
         "@types/node": "^25.0.3",
         "ai": "^6.0.3",
         "tsup": "^8.5.1",
@@ -135,12 +135,12 @@
       "name": "@raimonade/ai-sdk-tools",
       "version": "2.0.0",
       "devDependencies": {
-        "@raimonade/agents": "workspace:*",
-        "@raimonade/artifacts": "workspace:*",
-        "@raimonade/cache": "workspace:*",
-        "@raimonade/devtools": "workspace:*",
-        "@raimonade/memory": "workspace:*",
-        "@raimonade/store": "workspace:*",
+        "@raimonade/ai-sdk-tools-agents": "workspace:*",
+        "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+        "@raimonade/ai-sdk-tools-cache": "workspace:*",
+        "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+        "@raimonade/ai-sdk-tools-memory": "workspace:*",
+        "@raimonade/ai-sdk-tools-store": "workspace:*",
         "@types/node": "^25.0.3",
         "ai": "^6.0.3",
         "tsup": "^8.5.1",
@@ -163,14 +163,14 @@
       ],
     },
     "packages/artifacts": {
-      "name": "@raimonade/artifacts",
+      "name": "@raimonade/ai-sdk-tools-artifacts",
       "version": "2.0.0",
       "dependencies": {
         "zod": "^4.2.1",
       },
       "devDependencies": {
         "@ai-sdk/react": "^3.0.3",
-        "@raimonade/store": "workspace:*",
+        "@raimonade/ai-sdk-tools-store": "workspace:*",
         "@types/node": "^25.0.3",
         "@types/react": "^19.2.7",
         "tsup": "^8.5.1",
@@ -182,10 +182,10 @@
       },
     },
     "packages/cache": {
-      "name": "@raimonade/cache",
+      "name": "@raimonade/ai-sdk-tools-cache",
       "version": "2.0.0",
       "devDependencies": {
-        "@raimonade/artifacts": "workspace:*",
+        "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
         "@types/node": "^25.0.3",
         "ai": "^6.0.3",
         "tsup": "^8.5.1",
@@ -198,7 +198,7 @@
       },
     },
     "packages/debug": {
-      "name": "@raimonade/debug",
+      "name": "@raimonade/ai-sdk-tools-debug",
       "version": "2.0.0",
       "devDependencies": {
         "@types/node": "^25.0.3",
@@ -207,7 +207,7 @@
       },
     },
     "packages/devtools": {
-      "name": "@raimonade/devtools",
+      "name": "@raimonade/ai-sdk-tools-devtools",
       "version": "2.0.0",
       "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -222,7 +222,7 @@
       },
       "devDependencies": {
         "@ai-sdk/react": "^3.0.3",
-        "@raimonade/store": "workspace:*",
+        "@raimonade/ai-sdk-tools-store": "workspace:*",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
         "react": "^19.2.3",
@@ -232,22 +232,22 @@
       },
       "peerDependencies": {
         "@ai-sdk/react": ">=2.0.0",
-        "@raimonade/store": "*",
+        "@raimonade/ai-sdk-tools-store": "*",
         "react": ">=16.8.0",
         "react-dom": ">=16.8.0",
       },
       "optionalPeers": [
-        "@raimonade/store",
+        "@raimonade/ai-sdk-tools-store",
       ],
     },
     "packages/memory": {
-      "name": "@raimonade/memory",
+      "name": "@raimonade/ai-sdk-tools-memory",
       "version": "2.0.0",
       "dependencies": {
         "zod": "^4.2.1",
       },
       "devDependencies": {
-        "@raimonade/debug": "workspace:*",
+        "@raimonade/ai-sdk-tools-debug": "workspace:*",
         "@types/node": "^25.0.3",
         "@upstash/redis": "^1.35.8",
         "drizzle-orm": "^0.45.1",
@@ -273,7 +273,7 @@
       ],
     },
     "packages/ocr": {
-      "name": "@raimonade/ocr",
+      "name": "@raimonade/ai-sdk-tools-ocr",
       "version": "2.0.0",
       "devDependencies": {
         "@types/node": "^24.10.1",
@@ -291,7 +291,7 @@
       },
     },
     "packages/store": {
-      "name": "@raimonade/store",
+      "name": "@raimonade/ai-sdk-tools-store",
       "version": "2.0.0",
       "dependencies": {
         "@types/node": "^25.0.3",
@@ -709,25 +709,25 @@
 
     "@radix-ui/rect": ["@radix-ui/rect@1.1.1", "", {}, "sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw=="],
 
-    "@raimonade/agents": ["@raimonade/agents@workspace:packages/agents"],
-
     "@raimonade/ai-sdk-tools": ["@raimonade/ai-sdk-tools@workspace:packages/ai-sdk-tools"],
 
-    "@raimonade/artifacts": ["@raimonade/artifacts@workspace:packages/artifacts"],
+    "@raimonade/ai-sdk-tools-agents": ["@raimonade/ai-sdk-tools-agents@workspace:packages/agents"],
 
-    "@raimonade/cache": ["@raimonade/cache@workspace:packages/cache"],
+    "@raimonade/ai-sdk-tools-artifacts": ["@raimonade/ai-sdk-tools-artifacts@workspace:packages/artifacts"],
 
-    "@raimonade/debug": ["@raimonade/debug@workspace:packages/debug"],
+    "@raimonade/ai-sdk-tools-cache": ["@raimonade/ai-sdk-tools-cache@workspace:packages/cache"],
 
-    "@raimonade/devtools": ["@raimonade/devtools@workspace:packages/devtools"],
+    "@raimonade/ai-sdk-tools-debug": ["@raimonade/ai-sdk-tools-debug@workspace:packages/debug"],
+
+    "@raimonade/ai-sdk-tools-devtools": ["@raimonade/ai-sdk-tools-devtools@workspace:packages/devtools"],
+
+    "@raimonade/ai-sdk-tools-memory": ["@raimonade/ai-sdk-tools-memory@workspace:packages/memory"],
+
+    "@raimonade/ai-sdk-tools-ocr": ["@raimonade/ai-sdk-tools-ocr@workspace:packages/ocr"],
+
+    "@raimonade/ai-sdk-tools-store": ["@raimonade/ai-sdk-tools-store@workspace:packages/store"],
 
     "@raimonade/example": ["@raimonade/example@workspace:apps/example"],
-
-    "@raimonade/memory": ["@raimonade/memory@workspace:packages/memory"],
-
-    "@raimonade/ocr": ["@raimonade/ocr@workspace:packages/ocr"],
-
-    "@raimonade/store": ["@raimonade/store@workspace:packages/store"],
 
     "@raimonade/website": ["@raimonade/website@workspace:apps/website"],
 
@@ -1979,7 +1979,7 @@
 
     "@radix-ui/react-tooltip/@radix-ui/react-slot": ["@radix-ui/react-slot@1.2.3", "", { "dependencies": { "@radix-ui/react-compose-refs": "1.1.2" }, "peerDependencies": { "@types/react": "*", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react"] }, "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A=="],
 
-    "@raimonade/ocr/@types/node": ["@types/node@24.10.1", "", { "dependencies": { "undici-types": "~7.16.0" } }, "sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ=="],
+    "@raimonade/ai-sdk-tools-ocr/@types/node": ["@types/node@24.10.1", "", { "dependencies": { "undici-types": "~7.16.0" } }, "sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ=="],
 
     "@raimonade/website/@biomejs/biome": ["@biomejs/biome@2.3.6", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.3.6", "@biomejs/cli-darwin-x64": "2.3.6", "@biomejs/cli-linux-arm64": "2.3.6", "@biomejs/cli-linux-arm64-musl": "2.3.6", "@biomejs/cli-linux-x64": "2.3.6", "@biomejs/cli-linux-x64-musl": "2.3.6", "@biomejs/cli-win32-arm64": "2.3.6", "@biomejs/cli-win32-x64": "2.3.6" }, "bin": { "biome": "bin/biome" } }, "sha512-oqUhWyU6tae0MFsr/7iLe++QWRg+6jtUhlx9/0GmCWDYFFrK366sBLamNM7D9Y+c7YSynUFKr8lpEp1r6Sk7eA=="],
 

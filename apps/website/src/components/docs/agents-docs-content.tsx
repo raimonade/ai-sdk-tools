@@ -25,7 +25,7 @@ export default function AgentsDocsContent() {
               </strong>
             </p>
 
-            <InstallScriptTabs packageName="@raimonade/agents @raimonade/memory ai zod" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory ai zod" />
           </div>
         </section>
 
@@ -174,8 +174,8 @@ export default function AgentsDocsContent() {
                 className="text-sm font-mono leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html:
-                    highlight(`import { Agent } from '@raimonade/agents'
-import { InMemoryProvider } from '@raimonade/memory/in-memory'
+                    highlight(`import { Agent } from '@raimonade/ai-sdk-tools-agents'
+import { InMemoryProvider } from '@raimonade/ai-sdk-tools-memory/in-memory'
 import { openai } from '@ai-sdk/openai'
 
 const agent = new Agent({
@@ -227,7 +227,7 @@ const agent = new Agent({
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { Agent } from '@raimonade/agents'
+                        highlight(`import { Agent } from '@raimonade/ai-sdk-tools-agents'
 import { openai } from '@ai-sdk/openai'
 
 const agent = new Agent({
@@ -257,7 +257,7 @@ console.log(result.text) // "4"`),
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { Agent } from '@raimonade/agents'
+                        highlight(`import { Agent } from '@raimonade/ai-sdk-tools-agents'
 import { openai } from '@ai-sdk/openai'
 
 // Create specialized agents
@@ -352,7 +352,7 @@ const result = await orchestrator.generate({
                 className="text-sm font-mono leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html: highlight(`// app/api/chat/route.ts
-import { Agent } from '@raimonade/agents'
+import { Agent } from '@raimonade/ai-sdk-tools-agents'
 import { openai } from '@ai-sdk/openai'
 
 const supportAgent = new Agent({
@@ -712,7 +712,7 @@ const pipeline = new Agent({
             <div className="space-y-8">
               <div>
                 <h3 className="text-xl font-normal mb-4">
-                  With @raimonade/memory
+                  With @raimonade/ai-sdk-tools-memory
                 </h3>
                 <p className="text-sm text-secondary mb-4">
                   Add persistent working memory and conversation history to
@@ -723,7 +723,7 @@ const pipeline = new Agent({
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { DrizzleProvider } from '@raimonade/memory/drizzle'
+                        highlight(`import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 
 const agent = new Agent({
   name: 'Assistant',
@@ -768,7 +768,7 @@ const agent = new Agent({
 
               <div>
                 <h3 className="text-xl font-normal mb-4">
-                  With @raimonade/cache
+                  With @raimonade/ai-sdk-tools-cache
                 </h3>
                 <p className="text-sm text-secondary mb-4">
                   Cache expensive tool calls across agents:
@@ -778,7 +778,7 @@ const agent = new Agent({
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { cached } from '@raimonade/cache'
+                        highlight(`import { cached } from '@raimonade/ai-sdk-tools-cache'
 
 const agent = new Agent({
   name: 'Data Agent',
@@ -796,7 +796,7 @@ const agent = new Agent({
 
               <div>
                 <h3 className="text-xl font-normal mb-4">
-                  With @raimonade/artifacts
+                  With @raimonade/ai-sdk-tools-artifacts
                 </h3>
                 <p className="text-sm text-secondary mb-4">
                   Stream structured artifacts from agents:
@@ -806,7 +806,7 @@ const agent = new Agent({
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { artifact } from '@raimonade/artifacts'
+                        highlight(`import { artifact } from '@raimonade/ai-sdk-tools-artifacts'
 
 const reportAgent = new Agent({
   name: 'Report Generator',
@@ -829,7 +829,7 @@ const reportAgent = new Agent({
 
               <div>
                 <h3 className="text-xl font-normal mb-4">
-                  With @raimonade/devtools
+                  With @raimonade/ai-sdk-tools-devtools
                 </h3>
                 <p className="text-sm text-secondary mb-4">
                   Debug agent execution in development:
@@ -839,7 +839,7 @@ const reportAgent = new Agent({
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { AIDevTools } from '@raimonade/devtools'
+                        highlight(`import { AIDevTools } from '@raimonade/ai-sdk-tools-devtools'
 
 const agent = new Agent({
   name: 'Debug Agent',

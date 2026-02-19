@@ -31,7 +31,7 @@ show_help() {
     echo "  help      - Show this help message"
     echo ""
     echo "Note: Beta releases exclude the Chrome extension package"
-    echo "      Only @raimonade/store, @raimonade/devtools, and @raimonade/artifacts are included"
+    echo "      Only @raimonade/ai-sdk-tools-store, @raimonade/ai-sdk-tools-devtools, and @raimonade/ai-sdk-tools-artifacts are included"
     echo ""
     echo "Examples:"
     echo "  $0 start     # Start a new beta release"

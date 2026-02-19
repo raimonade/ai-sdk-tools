@@ -78,7 +78,7 @@ export interface DrizzleProviderConfig<
  * @example
  * ```ts
  * import { drizzle } from 'drizzle-orm/postgres-js';
- * import { createWorkingMemoryTable, createMessagesTable } from '@raimonade/memory';
+ * import { createWorkingMemoryTable, createMessagesTable } from '@raimonade/ai-sdk-tools-memory';
  *
  * const db = drizzle(client);
  * const provider = new DrizzleProvider(db, {

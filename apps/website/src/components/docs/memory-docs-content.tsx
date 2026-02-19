@@ -42,11 +42,11 @@ export default function MemoryDocsContent() {
               and chat persistence with a simple 4-method interface.
               <strong className="text-[#d4d4d4]">
                 {" "}
-                Required dependency for @raimonade/agents.
+                Required dependency for @raimonade/ai-sdk-tools-agents.
               </strong>
             </p>
 
-            <InstallScriptTabs packageName="@raimonade/memory" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-memory" />
           </div>
         </section>
 
@@ -122,8 +122,8 @@ export default function MemoryDocsContent() {
             </p>
             <CodeBlock
               className="mb-12"
-              code={`import { InMemoryProvider } from '@raimonade/memory/in-memory'
- import { Agent } from '@raimonade/agents'
+              code={`import { InMemoryProvider } from '@raimonade/ai-sdk-tools-memory/in-memory'
+ import { Agent } from '@raimonade/ai-sdk-tools-agents'
  
  const memory = new InMemoryProvider()
 
@@ -169,7 +169,7 @@ const agent = new Agent({
               code={`import { drizzle } from 'drizzle-orm/vercel-postgres'
  import { sql } from '@vercel/postgres'
  import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
- import { DrizzleProvider } from '@raimonade/memory/drizzle'
+ import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 
 // Define your schema
 const workingMemory = pgTable('working_memory', {
@@ -218,7 +218,7 @@ const messages = pgTable('conversation_messages', {
             <CodeBlock
               className="mb-12"
               code={`import { Redis } from '@upstash/redis'
-import { UpstashProvider } from '@raimonade/memory/upstash'
+import { UpstashProvider } from '@raimonade/ai-sdk-tools-memory/upstash'
 
 const redis = Redis.fromEnv()
 const memory = new UpstashProvider(redis)`}
@@ -234,7 +234,7 @@ const memory = new UpstashProvider(redis)`}
             <CodeBlock
               className="mb-8"
               code={`import type { Kysely } from 'kysely'
-import { KyselyProvider } from '@raimonade/memory/kysely'
+import { KyselyProvider } from '@raimonade/ai-sdk-tools-memory/kysely'
 
 interface DB {
   working_memory: {
@@ -325,7 +325,7 @@ export function createMemory(db: Kysely<DB>) {
                 href="/docs/agents"
                 className="text-[#d4d4d4] hover:underline"
               >
-                @raimonade/agents
+                @raimonade/ai-sdk-tools-agents
               </Link>
               . The agent automatically handles:
             </p>
@@ -356,8 +356,8 @@ export function createMemory(db: Kysely<DB>) {
 
             <CodeBlock
               className="mb-8"
-              code={`import { Agent } from '@raimonade/agents'
- import { DrizzleProvider } from '@raimonade/memory/drizzle'
+              code={`import { Agent } from '@raimonade/ai-sdk-tools-agents'
+ import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 
 const agent = new Agent({
   name: 'Financial Assistant',
@@ -516,7 +516,7 @@ interface ConversationMessage {
   WorkingMemory, 
   ConversationMessage,
   MemoryScope 
-} from '@raimonade/memory'
+} from '@raimonade/ai-sdk-tools-memory'
 
 class MyCustomProvider implements MemoryProvider {
   async getWorkingMemory(params: {
@@ -577,8 +577,8 @@ class MyCustomProvider implements MemoryProvider {
             <CodeBlock
               className="mb-8"
               code={`// app/api/chat/route.ts
- import { Agent } from '@raimonade/agents'
- import { DrizzleProvider } from '@raimonade/memory/drizzle'
+ import { Agent } from '@raimonade/ai-sdk-tools-agents'
+ import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
  import { openai } from '@ai-sdk/openai'
 
 const memory = new DrizzleProvider(db)
@@ -617,7 +617,7 @@ export async function POST(req: Request) {
 }
 
 // Client usage
-import { useChat } from '@raimonade/store'
+import { useChat } from '@raimonade/ai-sdk-tools-store'
 
 function ChatComponent() {
   const { messages, sendMessage } = useChat({

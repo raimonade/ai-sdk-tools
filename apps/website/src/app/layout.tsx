@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Provider } from "@raimonade/store";
+import { Provider } from "@raimonade/ai-sdk-tools-store";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";

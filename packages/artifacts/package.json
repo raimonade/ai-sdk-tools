@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/artifacts",
+  "name": "@raimonade/ai-sdk-tools-artifacts",
   "private": false,
   "version": "2.0.0",
   "description": "Advanced streaming interfaces for AI applications",
@@ -61,7 +61,7 @@
     "@types/react": "^19.2.7",
     "typescript": "^5.9.3",
     "tsup": "^8.5.1",
-    "@raimonade/store": "workspace:*"
+    "@raimonade/ai-sdk-tools-store": "workspace:*"
   },
   "peerDependencies": {
     "ai": "^6.0.3",

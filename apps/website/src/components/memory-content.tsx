@@ -24,7 +24,7 @@ export default function MemoryContent() {
             </p>
 
             {/* Terminal */}
-            <InstallScriptTabs packageName="@raimonade/memory" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-memory" />
 
             {/* Used by */}
             <div className="space-y-6 max-w-xl">
@@ -66,8 +66,8 @@ export default function MemoryContent() {
                 className="text-xs font-mono leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html:
-                    highlight(`import { Agent } from '@raimonade/agents'
-import { DrizzleProvider } from '@raimonade/memory/drizzle'
+                    highlight(`import { Agent } from '@raimonade/ai-sdk-tools-agents'
+import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 
 const agent = new Agent({
   name: 'Assistant',
@@ -163,7 +163,7 @@ const agent = new Agent({
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { InMemoryProvider } from '@raimonade/memory/in-memory'
+                      highlight(`import { InMemoryProvider } from '@raimonade/ai-sdk-tools-memory/in-memory'
 
 const memory = new InMemoryProvider()
 
@@ -188,7 +188,7 @@ const memory = new InMemoryProvider()
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { DrizzleProvider } from '@raimonade/memory/drizzle'
+                      highlight(`import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 
 const memory = new DrizzleProvider(db, {
   workingMemoryTable,
@@ -215,7 +215,7 @@ const memory = new DrizzleProvider(db, {
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { UpstashProvider } from '@raimonade/memory/upstash'
+                      highlight(`import { UpstashProvider } from '@raimonade/ai-sdk-tools-memory/upstash'
 import { Redis } from '@upstash/redis'
 
 const memory = new UpstashProvider(
@@ -296,10 +296,10 @@ const memory = new UpstashProvider(
             <div className="text-sm flex items-center justify-between">
               <div>
                 <span className="text-secondary">git: (main)$ </span>
-                <span className="text-white">npm i @raimonade/memory</span>
+                <span className="text-white">npm i @raimonade/ai-sdk-tools-memory</span>
               </div>
               <CopyButton
-                text="npm i @raimonade/memory"
+                text="npm i @raimonade/ai-sdk-tools-memory"
                 className="ml-4 hover:text-white"
                 size={16}
               />

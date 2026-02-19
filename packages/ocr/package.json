@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/ocr",
+  "name": "@raimonade/ai-sdk-tools-ocr",
   "version": "2.0.0",
   "description": "Extract structured data from invoices and receipts using AI SDK with intelligent provider fallback",
   "keywords": [

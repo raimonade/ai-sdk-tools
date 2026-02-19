@@ -6,7 +6,7 @@
 
 import type { ModelMessage } from "ai";
 import type { HandoffInputData } from "./types.js";
-import { createLogger } from "@raimonade/debug";
+import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 
 const logger = createLogger('TOOL_EXTRACTOR');
 

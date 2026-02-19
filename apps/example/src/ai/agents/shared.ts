@@ -7,8 +7,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { openai } from "@ai-sdk/openai";
-import { Agent } from "@raimonade/agents";
-import { UpstashProvider } from "@raimonade/memory/upstash";
+import { Agent } from "@raimonade/ai-sdk-tools-agents";
+import { UpstashProvider } from "@raimonade/ai-sdk-tools-memory/upstash";
 import { Redis } from "@upstash/redis";
 import type { LanguageModel, Tool } from "ai";
 
@@ -62,7 +62,7 @@ export interface AppContext {
 }
 
 /**
- * Agent configuration type (subset of full AgentConfig from @raimonade/agents)
+ * Agent configuration type (subset of full AgentConfig from @raimonade/ai-sdk-tools-agents)
  */
 interface AgentConfig<TContext extends Record<string, unknown>> {
   name: string;

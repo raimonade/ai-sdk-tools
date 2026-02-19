@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/devtools",
+  "name": "@raimonade/ai-sdk-tools-devtools",
   "version": "2.0.0",
   "description": "AI development tools for debugging and monitoring AI SDKs streams",
   "main": "./dist/index.js",
@@ -40,10 +40,10 @@
     "@ai-sdk/react": ">=2.0.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
-    "@raimonade/store": "*"
+    "@raimonade/ai-sdk-tools-store": "*"
   },
   "peerDependenciesMeta": {
-    "@raimonade/store": {
+    "@raimonade/ai-sdk-tools-store": {
       "optional": true
     }
   },
@@ -55,7 +55,7 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "@ai-sdk/react": "^3.0.3",
-    "@raimonade/store": "workspace:*"
+    "@raimonade/ai-sdk-tools-store": "workspace:*"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

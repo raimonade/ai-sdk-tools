@@ -12,7 +12,7 @@
  * - Available in all tools via executionOptions.experimental_context
  */
 
-import type { MemoryConfig } from "@raimonade/memory";
+import type { MemoryConfig } from "@raimonade/ai-sdk-tools-memory";
 import type { UIMessageStreamWriter } from "ai";
 
 /**

@@ -10,8 +10,8 @@
  */
 
 // Client-side artifact hooks
-export * from "@raimonade/artifacts/client";
+export * from "@raimonade/ai-sdk-tools-artifacts/client";
 // Devtools components
-export * from "@raimonade/devtools";
+export * from "@raimonade/ai-sdk-tools-devtools";
 // Store hooks and state management
-export * from "@raimonade/store";
+export * from "@raimonade/ai-sdk-tools-store";

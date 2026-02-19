@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/agents",
+  "name": "@raimonade/ai-sdk-tools-agents",
   "version": "2.0.0",
   "description": "Multi-agent orchestration system built on AI SDK v6 - handoffs, routing, and coordination for any AI provider",
   "keywords": [
@@ -54,10 +54,10 @@
     "zod": "^3.25.76 || ^4.1.8"
   },
   "peerDependenciesMeta": {
-    "@raimonade/artifacts": {
+    "@raimonade/ai-sdk-tools-artifacts": {
       "optional": true
     },
-    "@raimonade/cache": {
+    "@raimonade/ai-sdk-tools-cache": {
       "optional": true
     }
   },
@@ -67,8 +67,8 @@
     "typescript": "^5.9.3",
     "zod": "^4.2.1",
     "ai": "^6.0.3",
-    "@raimonade/debug": "workspace:*",
-    "@raimonade/memory": "workspace:*"
+    "@raimonade/ai-sdk-tools-debug": "workspace:*",
+    "@raimonade/ai-sdk-tools-memory": "workspace:*"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

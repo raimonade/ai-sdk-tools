@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/store",
+  "name": "@raimonade/ai-sdk-tools-store",
   "version": "2.0.0",
   "description": "A drop-in replacement for @ai-sdk/react that automatically syncs chat state to Zustand stores",
   "main": "./dist/index.js",

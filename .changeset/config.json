@@ -4,15 +4,15 @@
   "commit": false,
   "fixed": [
     [
-      "@raimonade/agents",
+      "@raimonade/ai-sdk-tools-agents",
       "@raimonade/ai-sdk-tools",
-      "@raimonade/artifacts",
-      "@raimonade/cache",
-      "@raimonade/debug",
-      "@raimonade/devtools",
-      "@raimonade/memory",
-      "@raimonade/ocr",
-      "@raimonade/store"
+      "@raimonade/ai-sdk-tools-artifacts",
+      "@raimonade/ai-sdk-tools-cache",
+      "@raimonade/ai-sdk-tools-debug",
+      "@raimonade/ai-sdk-tools-devtools",
+      "@raimonade/ai-sdk-tools-memory",
+      "@raimonade/ai-sdk-tools-ocr",
+      "@raimonade/ai-sdk-tools-store"
     ]
   ],
   "linked": [],

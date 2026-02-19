@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/debug",
+  "name": "@raimonade/ai-sdk-tools-debug",
   "version": "2.0.0",
   "description": "Shared debug utilities for AI SDK Tools",
   "license": "MIT",

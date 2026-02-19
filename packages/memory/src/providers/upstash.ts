@@ -1,4 +1,4 @@
-import { createLogger } from "@raimonade/debug";
+import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 import type { Redis } from "@upstash/redis";
 import type {
   ChatSession,

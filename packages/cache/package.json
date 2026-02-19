@@ -1,5 +1,5 @@
 {
-  "name": "@raimonade/cache",
+  "name": "@raimonade/ai-sdk-tools-cache",
   "version": "2.0.0",
   "description": "Simple caching wrapper for AI SDK tools - cache expensive tool executions with zero configuration",
   "keywords": [
@@ -49,7 +49,7 @@
     "ai": "^6.0.3"
   },
   "peerDependenciesMeta": {
-    "@raimonade/artifacts": {
+    "@raimonade/ai-sdk-tools-artifacts": {
       "optional": true
     }
   },
@@ -60,7 +60,7 @@
     "vitest": "^4.0.16",
     "zod": "^4.2.1",
     "ai": "^6.0.3",
-    "@raimonade/artifacts": "workspace:*"
+    "@raimonade/ai-sdk-tools-artifacts": "workspace:*"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

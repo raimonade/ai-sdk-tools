@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: [
-    "@raimonade/store",
-    "@raimonade/devtools",
-    "@raimonade/artifacts",
+    "@raimonade/ai-sdk-tools-store",
+    "@raimonade/ai-sdk-tools-devtools",
+    "@raimonade/ai-sdk-tools-artifacts",
   ],
   // Performance optimizations for SEO
   compress: true,

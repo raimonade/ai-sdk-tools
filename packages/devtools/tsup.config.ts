@@ -19,7 +19,7 @@ export default defineConfig({
     "react-dom",
     "react/jsx-runtime",
     "@ai-sdk/react",
-    "@raimonade/store",
+    "@raimonade/ai-sdk-tools-store",
   ],
   esbuildOptions(options) {
     options.loader = {

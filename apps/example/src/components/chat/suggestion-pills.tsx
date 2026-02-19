@@ -1,6 +1,6 @@
 "use client";
 
-import { useChatId } from "@raimonade/store";
+import { useChatId } from "@raimonade/ai-sdk-tools-store";
 import { useChatActions } from "@raimonade/ai-sdk-tools/client";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";

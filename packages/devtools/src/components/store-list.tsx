@@ -20,7 +20,7 @@ export function StoreList({
             No Stores Found
           </div>
           <div className="ai-devtools-state-changes-empty-description">
-            Ensure you are using `@raimonade/store` in your application.
+            Ensure you are using `@raimonade/ai-sdk-tools-store` in your application.
           </div>
         </div>
       </div>

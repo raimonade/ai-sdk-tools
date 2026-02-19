@@ -11,12 +11,12 @@
     "format": "biome format --write"
   },
   "dependencies": {
-    "@raimonade/agents": "workspace:*",
-    "@raimonade/artifacts": "workspace:*",
-    "@raimonade/cache": "workspace:*",
-    "@raimonade/devtools": "workspace:*",
-    "@raimonade/memory": "workspace:*",
-    "@raimonade/store": "workspace:*",
+    "@raimonade/ai-sdk-tools-agents": "workspace:*",
+    "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+    "@raimonade/ai-sdk-tools-cache": "workspace:*",
+    "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+    "@raimonade/ai-sdk-tools-memory": "workspace:*",
+    "@raimonade/ai-sdk-tools-store": "workspace:*",
     "@ai-sdk/openai": "^3.0.1",
     "@ai-sdk/react": "^3.0.3",
     "@radix-ui/react-accordion": "^1.2.12",

@@ -1,4 +1,4 @@
-import type { MemoryConfig } from "@raimonade/memory";
+import type { MemoryConfig } from "@raimonade/ai-sdk-tools-memory";
 import { tool } from "ai";
 import { z } from "zod";
 import { getContext, type ExecutionContext } from "../context.js";

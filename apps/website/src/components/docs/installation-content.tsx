@@ -73,7 +73,7 @@ export default function InstallationContent() {
                 Build intelligent workflows with specialized agents and
                 automatic handoffs.
               </p>
-              <InstallScriptTabs packageName="@raimonade/agents @raimonade/memory ai zod" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory ai zod" />
             </div>
 
             <div>
@@ -82,7 +82,7 @@ export default function InstallationContent() {
                 Global state management for AI applications with optimized
                 performance.
               </p>
-              <InstallScriptTabs packageName="@raimonade/store" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
             </div>
 
             <div>
@@ -90,7 +90,7 @@ export default function InstallationContent() {
               <p className="text-sm text-secondary mb-4">
                 Powerful debugging and monitoring tool for AI applications.
               </p>
-              <InstallScriptTabs packageName="@raimonade/devtools" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-devtools" />
             </div>
 
             <div>
@@ -99,7 +99,7 @@ export default function InstallationContent() {
                 Advanced streaming interfaces with structured data and progress
                 tracking.
               </p>
-              <InstallScriptTabs packageName="@raimonade/artifacts" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-artifacts" />
             </div>
 
             <div>
@@ -107,7 +107,7 @@ export default function InstallationContent() {
               <p className="text-sm text-secondary mb-4">
                 Cache expensive AI tool executions with zero configuration.
               </p>
-              <InstallScriptTabs packageName="@raimonade/cache" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-cache" />
             </div>
           </div>
         </section>
@@ -123,9 +123,9 @@ export default function InstallationContent() {
             </p>
 
             <InstallScriptTabs
-              packageName="@raimonade/agents @raimonade/memory @raimonade/store
-                @raimonade/devtools @raimonade/artifacts
-                @raimonade/cache ai zod"
+              packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory @raimonade/ai-sdk-tools-store
+                @raimonade/ai-sdk-tools-devtools @raimonade/ai-sdk-tools-artifacts
+                @raimonade/ai-sdk-tools-cache ai zod"
             />
           </div>
         </section>
@@ -142,7 +142,7 @@ export default function InstallationContent() {
               Use your preferred package manager to install any package from AI
               SDK Tools, for example:
             </p>
-            <InstallScriptTabs packageName="@raimonade/store" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
           </div>
         </section>
 

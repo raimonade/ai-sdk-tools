@@ -1,5 +1,5 @@
 import type { UIMessage } from "@ai-sdk/react";
-import { useChatActions, useChatMessages } from "@raimonade/store";
+import { useChatActions, useChatMessages } from "@raimonade/ai-sdk-tools-store";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { z } from "zod";
 import type {
