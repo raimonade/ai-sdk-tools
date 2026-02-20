@@ -1,4 +1,4 @@
-# @ai-sdk-tools/devtools
+# @raimonade/devtools
 
 ## 2.0.0
 
@@ -9,7 +9,7 @@
 ### Patch Changes
 
 - Updated dependencies [1d87332]
-  - @ai-sdk-tools/store@2.0.0
+  - @raimonade/store@2.0.0
 
 ## 2.0.0
 
@@ -20,55 +20,55 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@2.0.0
+  - @raimonade/store@2.0.0
 
 ## 1.0.8
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.8
+- @raimonade/store@1.0.8
 
 ## 1.0.7
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.7
+- @raimonade/store@1.0.7
 
 ## 1.0.6
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.6
+- @raimonade/store@1.0.6
 
 ## 1.0.5
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.5
+- @raimonade/store@1.0.5
 
 ## 1.0.4
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.4
+- @raimonade/store@1.0.4
 
 ## 1.0.3
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.3
+- @raimonade/store@1.0.3
 
 ## 1.0.2
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.2
+- @raimonade/store@1.0.2
 
 ## 1.0.1
 
 ### Patch Changes
 
-- @ai-sdk-tools/store@1.0.1
+- @raimonade/store@1.0.1
 
 ## 1.0.0
 
@@ -79,7 +79,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/store@1.0.0
+  - @raimonade/store@1.0.0
 
 ## 0.9.1
 
@@ -87,7 +87,7 @@
 
 - Routine release.
 - Updated dependencies
-  - @ai-sdk-tools/store@0.9.1
+  - @raimonade/store@0.9.1
 
 ## 0.7.0
 

@@ -22,6 +22,44 @@ export default function InstallationContent() {
           </div>
         </section>
 
+        {/* GitHub Packages Registry Setup */}
+        <section className="mb-40">
+          <h2 className="text-2xl font-medium mb-8">Registry Setup</h2>
+
+          <div className="border border-[#3c3c3c] p-6">
+            <h3 className="text-lg font-medium mb-4">
+              Configure GitHub Packages
+            </h3>
+            <p className="text-sm text-secondary mb-6">
+              These packages are published to GitHub Packages. Create a{" "}
+              <code className="text-xs bg-[#2a2a2a] px-1.5 py-0.5 rounded">
+                .npmrc
+              </code>{" "}
+              file in your project root:
+            </p>
+            <div className="bg-transparent p-4 rounded border border-[#2a2a2a]">
+              <pre
+                className="text-xs font-mono leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: highlight(`@raimonade:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=\${GITHUB_TOKEN}`),
+                }}
+              />
+            </div>
+            <p className="text-xs text-secondary mt-4">
+              You need a GitHub personal access token with{" "}
+              <code className="text-xs bg-[#2a2a2a] px-1.5 py-0.5 rounded">
+                read:packages
+              </code>{" "}
+              scope. Set it as the{" "}
+              <code className="text-xs bg-[#2a2a2a] px-1.5 py-0.5 rounded">
+                GITHUB_TOKEN
+              </code>{" "}
+              environment variable.
+            </p>
+          </div>
+        </section>
+
         {/* Individual Packages */}
         <section className="mb-40">
           <h2 className="text-2xl font-medium mb-8">Individual Packages</h2>
@@ -35,7 +73,7 @@ export default function InstallationContent() {
                 Build intelligent workflows with specialized agents and
                 automatic handoffs.
               </p>
-              <InstallScriptTabs packageName="@ai-sdk-tools/agents @ai-sdk-tools/memory ai zod" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory ai zod" />
             </div>
 
             <div>
@@ -44,7 +82,7 @@ export default function InstallationContent() {
                 Global state management for AI applications with optimized
                 performance.
               </p>
-              <InstallScriptTabs packageName="@ai-sdk-tools/store" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
             </div>
 
             <div>
@@ -52,7 +90,7 @@ export default function InstallationContent() {
               <p className="text-sm text-secondary mb-4">
                 Powerful debugging and monitoring tool for AI applications.
               </p>
-              <InstallScriptTabs packageName="@ai-sdk-tools/devtools" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-devtools" />
             </div>
 
             <div>
@@ -61,7 +99,7 @@ export default function InstallationContent() {
                 Advanced streaming interfaces with structured data and progress
                 tracking.
               </p>
-              <InstallScriptTabs packageName="@ai-sdk-tools/artifacts" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-artifacts" />
             </div>
 
             <div>
@@ -69,7 +107,7 @@ export default function InstallationContent() {
               <p className="text-sm text-secondary mb-4">
                 Cache expensive AI tool executions with zero configuration.
               </p>
-              <InstallScriptTabs packageName="@ai-sdk-tools/cache" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-cache" />
             </div>
           </div>
         </section>
@@ -85,9 +123,9 @@ export default function InstallationContent() {
             </p>
 
             <InstallScriptTabs
-              packageName="@ai-sdk-tools/agents @ai-sdk-tools/memory @ai-sdk-tools/store
-                @ai-sdk-tools/devtools @ai-sdk-tools/artifacts
-                @ai-sdk-tools/cache ai zod"
+              packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory @raimonade/ai-sdk-tools-store
+                @raimonade/ai-sdk-tools-devtools @raimonade/ai-sdk-tools-artifacts
+                @raimonade/ai-sdk-tools-cache ai zod"
             />
           </div>
         </section>
@@ -104,7 +142,7 @@ export default function InstallationContent() {
               Use your preferred package manager to install any package from AI
               SDK Tools, for example:
             </p>
-            <InstallScriptTabs packageName="@ai-sdk-tools/store" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
           </div>
         </section>
 

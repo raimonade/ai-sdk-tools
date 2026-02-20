@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { artifact, createTypedContext } from "@ai-sdk-tools/artifacts";
+import { artifact, createTypedContext } from "@raimonade/ai-sdk-tools-artifacts";
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,

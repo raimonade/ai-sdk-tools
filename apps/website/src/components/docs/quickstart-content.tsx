@@ -41,28 +41,28 @@ export default function QuickstartContent() {
                     <h4 className="text-lg font-normal mb-2">
                       Multi-Agent Orchestration
                     </h4>
-                    <InstallScriptTabs packageName="@ai-sdk-tools/agents @ai-sdk-tools/memory ai zod" />
+                    <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory ai zod" />
                   </div>
 
                   <div>
                     <h4 className="text-lg font-normal mb-2">
                       State Management
                     </h4>
-                    <InstallScriptTabs packageName="@ai-sdk-tools/store" />
+                    <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
                   </div>
 
                   <div>
                     <h4 className="text-lg font-normal mb-2">
                       Debugging Tools
                     </h4>
-                    <InstallScriptTabs packageName="@ai-sdk-tools/devtools" />
+                    <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-devtools" />
                   </div>
 
                   <div>
                     <h4 className="text-lg font-normal mb-2">
                       Streaming Interfaces
                     </h4>
-                    <InstallScriptTabs packageName="@ai-sdk-tools/artifacts" />
+                    <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-artifacts" />
                   </div>
                 </div>
               </div>
@@ -71,8 +71,8 @@ export default function QuickstartContent() {
               <div>
                 <h3 className="text-xl font-normal mb-4">Complete Toolkit</h3>
                 <InstallScriptTabs
-                  packageName="@ai-sdk-tools/agents @ai-sdk-tools/memory @ai-sdk-tools/store @ai-sdk-tools/devtools
-                    @ai-sdk-tools/artifacts ai zod"
+                  packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory @raimonade/ai-sdk-tools-store @raimonade/ai-sdk-tools-devtools
+                    @raimonade/ai-sdk-tools-artifacts ai zod"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function QuickstartContent() {
                   className="bg-transparent border border-[#2a2a2a] p-6 rounded-lg overflow-x-auto"
                   dangerouslySetInnerHTML={{
                     __html: highlight(`
-import { createAIStore } from '@ai-sdk-tools/store';
+import { createAIStore } from '@raimonade/ai-sdk-tools-store';
 
 const store = createAIStore({
   initialMessages: [],
@@ -118,7 +118,7 @@ export { store };`),
                   className="bg-transparent border border-[#2a2a2a] p-6 rounded-lg overflow-x-auto"
                   dangerouslySetInnerHTML={{
                     __html: highlight(`
-import { AIDevTools } from '@ai-sdk-tools/devtools';
+import { AIDevTools } from '@raimonade/ai-sdk-tools-devtools';
 
 function App() {
   return (
@@ -139,7 +139,7 @@ function App() {
                   className="bg-transparent border border-[#2a2a2a] p-6 rounded-lg overflow-x-auto"
                   dangerouslySetInnerHTML={{
                     __html: highlight(`
-import { createArtifact } from '@ai-sdk-tools/artifacts';
+import { createArtifact } from '@raimonade/ai-sdk-tools-artifacts';
 
 const burnRateArtifact = createArtifact({
   name: 'burn-rate',

@@ -21,7 +21,7 @@ export default function CacheContent() {
               streaming tools, and artifacts.
             </p>
 
-            <InstallScriptTabs packageName="@ai-sdk-tools/cache" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-cache" />
           </div>
         </section>
 
@@ -35,7 +35,7 @@ export default function CacheContent() {
                   className="text-sm font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { cached } from '@ai-sdk-tools/cache'
+                      highlight(`import { cached } from '@raimonade/ai-sdk-tools-cache'
 
 const expensiveWeatherTool = tool({
   description: 'Get weather data',
@@ -145,7 +145,7 @@ const weatherTool = cached(expensiveWeatherTool)
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { cached } from '@ai-sdk-tools/cache'
+                        highlight(`import { cached } from '@raimonade/ai-sdk-tools-cache'
 
 // Uses LRU cache automatically
 const weatherTool = cached(expensiveWeatherTool, {
@@ -167,7 +167,7 @@ const weatherTool = cached(expensiveWeatherTool, {
                     className="text-sm font-mono leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html:
-                        highlight(`import { createCachedFunction, createCacheBackend } from '@ai-sdk-tools/cache'
+                        highlight(`import { createCachedFunction, createCacheBackend } from '@raimonade/ai-sdk-tools-cache'
 import Redis from 'redis'
 
 const redis = Redis.createClient({
@@ -521,7 +521,7 @@ const stream = createUIMessageStream({
               </Link>
 
               <a
-                href="https://github.com/midday-ai/ai-sdk-tools"
+                href="https://github.com/raimonade/ai-sdk-tools"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"

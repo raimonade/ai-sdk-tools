@@ -1,6 +1,6 @@
 {
-  "name": "@ai-sdk-tools/debug",
-  "version": "1.2.0",
+  "name": "@raimonade/ai-sdk-tools-debug",
+  "version": "2.0.0",
   "description": "Shared debug utilities for AI SDK Tools",
   "license": "MIT",
   "type": "module",
@@ -18,7 +18,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
@@ -26,6 +26,7 @@
     "build": "tsup"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

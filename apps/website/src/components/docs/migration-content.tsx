@@ -42,7 +42,7 @@ export default function MigrationContent() {
 import { useChat } from '@ai-sdk/react'
 
 // After - ONLY CHANGE NEEDED
-import { useChat } from '@ai-sdk-tools/store'`),
+import { useChat } from '@raimonade/ai-sdk-tools-store'`),
                 }}
               />
             </div>
@@ -58,7 +58,7 @@ import { useChat } from '@ai-sdk-tools/store'`),
               <h3 className="text-lg font-medium mb-4">
                 1. Install the package
               </h3>
-              <InstallScriptTabs packageName="@ai-sdk-tools/store" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-store" />
             </div>
 
             <div>
@@ -73,7 +73,7 @@ import { useChat } from '@ai-sdk-tools/store'`),
 import { useChat } from '@ai-sdk/react'
 
 // With this
-import { useChat } from '@ai-sdk-tools/store'`),
+import { useChat } from '@raimonade/ai-sdk-tools-store'`),
                   }}
                 />
               </div>
@@ -91,7 +91,7 @@ import { useChat } from '@ai-sdk-tools/store'`),
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html: highlight(`// store.ts
-import { createAIStore } from '@ai-sdk-tools/store'
+import { createAIStore } from '@raimonade/ai-sdk-tools-store'
 
 export const store = createAIStore({
   initialMessages: [],
@@ -113,7 +113,7 @@ export const store = createAIStore({
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { AIDevTools } from '@ai-sdk-tools/devtools'
+                      highlight(`import { AIDevTools } from '@raimonade/ai-sdk-tools-devtools'
 
 function App() {
   return (
@@ -258,7 +258,7 @@ function Header() {
                     TypeScript errors
                   </h4>
                   <p className="text-sm text-secondary">
-                    Make sure you have the latest version of @ai-sdk-tools/store
+                    Make sure you have the latest version of @raimonade/ai-sdk-tools-store
                     and that your TypeScript configuration is up to date.
                   </p>
                 </div>
@@ -288,7 +288,7 @@ function Header() {
             </Link>
 
             <a
-              href="https://github.com/midday-ai/ai-sdk-tools"
+              href="https://github.com/raimonade/ai-sdk-tools"
               target="_blank"
               rel="noopener noreferrer"
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"

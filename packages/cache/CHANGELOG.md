@@ -1,4 +1,4 @@
-# @ai-sdk-tools/cache
+# @raimonade/cache
 
 ## 2.0.0
 
@@ -132,7 +132,7 @@
 
 ### Minor Changes
 
-- Initial release of @ai-sdk-tools/cache
+- Initial release of @raimonade/cache
 - Simple caching wrapper for AI SDK tools with zero configuration
 - LRU cache implementation with TTL support
 - Support for custom cache keys and conditional caching

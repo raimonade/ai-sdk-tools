@@ -25,9 +25,9 @@
  */
 
 // Re-export everything from all packages
-export * from "@ai-sdk-tools/agents";
-export * from "@ai-sdk-tools/artifacts";
-export * from "@ai-sdk-tools/cache";
-export * from "@ai-sdk-tools/devtools";
-export * from "@ai-sdk-tools/memory";
-export * from "@ai-sdk-tools/store";
+export * from "@raimonade/ai-sdk-tools-agents";
+export * from "@raimonade/ai-sdk-tools-artifacts";
+export * from "@raimonade/ai-sdk-tools-cache";
+export * from "@raimonade/ai-sdk-tools-devtools";
+export * from "@raimonade/ai-sdk-tools-memory";
+export * from "@raimonade/ai-sdk-tools-store";

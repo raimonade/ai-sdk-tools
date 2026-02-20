@@ -1,6 +1,6 @@
 "use client";
 
-import { useChatActions } from "ai-sdk-tools/client";
+import { useChatActions } from "@raimonade/ai-sdk-tools/client";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useChatInterface } from "@/hooks/use-chat-interface";

@@ -1,4 +1,4 @@
-# @ai-sdk-tools/memory
+# @raimonade/memory
 
 ## 2.0.0
 
@@ -84,7 +84,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/debug@1.0.0
+  - @raimonade/debug@1.0.0
 
 ## 0.9.1
 
@@ -92,13 +92,13 @@
 
 - Routine release.
 - Updated dependencies
-  - @ai-sdk-tools/debug@0.9.1
+  - @raimonade/debug@0.9.1
 
 ## 0.1.0
 
 ### Minor Changes
 
-- Initial release of `@ai-sdk-tools/memory` package
+- Initial release of `@raimonade/memory` package
 - Persistent working memory system for AI agents
 - Three built-in providers:
   - `InMemoryProvider` - Zero setup, perfect for development
@@ -107,6 +107,6 @@
 - Simple 4-method `MemoryProvider` interface
 - Flexible memory scopes: chat-level or user-level
 - Optional conversation history tracking
-- Automatic integration with `@ai-sdk-tools/agents`
+- Automatic integration with `@raimonade/agents`
 - Auto-injection of `updateWorkingMemory` tool
 - TypeScript-first design with full type safety

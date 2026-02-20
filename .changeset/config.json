@@ -4,19 +4,20 @@
   "commit": false,
   "fixed": [
     [
-      "@ai-sdk-tools/agents",
-      "ai-sdk-tools",
-      "@ai-sdk-tools/artifacts",
-      "@ai-sdk-tools/cache",
-      "@ai-sdk-tools/debug",
-      "@ai-sdk-tools/devtools",
-      "@ai-sdk-tools/memory",
-      "@ai-sdk-tools/store"
+      "@raimonade/ai-sdk-tools-agents",
+      "@raimonade/ai-sdk-tools",
+      "@raimonade/ai-sdk-tools-artifacts",
+      "@raimonade/ai-sdk-tools-cache",
+      "@raimonade/ai-sdk-tools-debug",
+      "@raimonade/ai-sdk-tools-devtools",
+      "@raimonade/ai-sdk-tools-memory",
+      "@raimonade/ai-sdk-tools-ocr",
+      "@raimonade/ai-sdk-tools-store"
     ]
   ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@ai-sdk-tools/website", "@ai-sdk-tools/example"]
+  "ignore": ["@raimonade/website", "@raimonade/example"]
 }

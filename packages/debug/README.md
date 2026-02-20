@@ -1,17 +1,17 @@
-# @ai-sdk-tools/debug
+# @raimonade/debug
 
 Shared debug utilities for AI SDK Tools packages using Pino.
 
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/debug
+npm install @raimonade/debug
 ```
 
 ## Usage
 
 ```typescript
-import { createLogger } from '@ai-sdk-tools/debug';
+import { createLogger } from '@raimonade/debug';
 
 const logger = createLogger('AGENT');
 

@@ -1,4 +1,4 @@
-import { AIDevtools } from "@ai-sdk-tools/devtools";
+import { AIDevtools } from "@raimonade/ai-sdk-tools-devtools";
 import { redirect } from "next/navigation";
 import { ChatInterface } from "@/components/chat";
 import { loadChatHistory } from "@/lib/data";

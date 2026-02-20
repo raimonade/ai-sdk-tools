@@ -1,6 +1,6 @@
 "use client";
 
-import { useArtifact } from "ai-sdk-tools/client";
+import { useArtifact } from "@raimonade/ai-sdk-tools/client";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { memo } from "react";
 import { BalanceSheetArtifact } from "@/ai/artifacts/balance-sheet";

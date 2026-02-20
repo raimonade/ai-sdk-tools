@@ -20,7 +20,7 @@ export default function ArtifactsContent() {
               AI tools to React components with progress tracking and error
               handling.
             </p>
-            <InstallScriptTabs packageName="@ai-sdk-tools/artifacts" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-artifacts" />
           </div>
         </section>
 
@@ -88,7 +88,7 @@ export default function ArtifactsContent() {
               <h3 className="text-lg font-medium mb-4">
                 1. Install the package
               </h3>
-              <InstallScriptTabs packageName="@ai-sdk-tools/artifacts" />
+              <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-artifacts" />
             </div>
 
             <div>
@@ -100,7 +100,7 @@ export default function ArtifactsContent() {
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { artifact } from '@ai-sdk-tools/artifacts'
+                      highlight(`import { artifact } from '@raimonade/ai-sdk-tools-artifacts'
 import { z } from 'zod'
 
 const burnRateArtifact = artifact('burn-rate', z.object({
@@ -123,7 +123,7 @@ const burnRateArtifact = artifact('burn-rate', z.object({
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { useArtifact } from '@ai-sdk-tools/artifacts/client'
+                      highlight(`import { useArtifact } from '@raimonade/ai-sdk-tools-artifacts/client'
 
 function BurnRateChart() {
   const { data, status, error, progress } = useArtifact(burnRateArtifact)
@@ -258,7 +258,7 @@ function ResilientComponent() {
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { artifact } from '@ai-sdk-tools/artifacts'
+                      highlight(`import { artifact } from '@raimonade/ai-sdk-tools-artifacts'
 import { z } from 'zod'
 
 const myArtifact = artifact(
@@ -286,7 +286,7 @@ const myArtifact = artifact(
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { useArtifact } from '@ai-sdk-tools/artifacts/client'
+                      highlight(`import { useArtifact } from '@raimonade/ai-sdk-tools-artifacts/client'
 
 const {
   data,        // Current artifact payload (typed)
@@ -319,7 +319,7 @@ const {
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html:
-                      highlight(`import { useArtifacts } from '@ai-sdk-tools/artifacts/client'
+                      highlight(`import { useArtifacts } from '@raimonade/ai-sdk-tools-artifacts/client'
 
 const {
   byType,       // All artifacts grouped by type
@@ -389,7 +389,7 @@ function Canvas() {
             </Link>
 
             <a
-              href="https://github.com/midday-ai/ai-sdk-tools"
+              href="https://github.com/raimonade/ai-sdk-tools"
               target="_blank"
               rel="noopener noreferrer"
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"

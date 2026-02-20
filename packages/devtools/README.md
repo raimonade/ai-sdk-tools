@@ -16,12 +16,12 @@ AI SDK Devtools helps you debug and monitor AI applications by:
 - **Event filtering** - Filter events by type, tool name, or search queries
 - **Context insights** - Visualize token usage and context window utilization
 - **Stream interception** - Automatically capture events from AI SDK streams
-- **State management** - Optional integration with @ai-sdk-tools/store for state debugging
+- **State management** - Optional integration with @raimonade/store for state debugging
 
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/devtools
+npm install @raimonade/devtools
 ```
 
 ### Optional Store Integration
@@ -29,7 +29,7 @@ npm install @ai-sdk-tools/devtools
 For enhanced state debugging capabilities, you can optionally install the store package:
 
 ```bash
-npm install @ai-sdk-tools/store
+npm install @raimonade/store
 ```
 
 The devtools will automatically detect and integrate with the store if available, but it works perfectly fine without it for basic event monitoring.
@@ -41,7 +41,7 @@ The devtools will automatically detect and integrate with the store if available
 ### Basic Usage
 
 ```tsx
-import { AIDevtools } from '@ai-sdk-tools/devtools';
+import { AIDevtools } from '@raimonade/devtools';
 
 function App() {
   return (
@@ -59,7 +59,7 @@ function App() {
 
 ```tsx
 import { useChat } from 'ai/react';
-import { AIDevtools } from '@ai-sdk-tools/devtools';
+import { AIDevtools } from '@raimonade/devtools';
 import { DefaultChatTransport } from 'ai';
 
 function ChatComponent() {
@@ -135,7 +135,7 @@ function ChatComponent() {
 ### Manual Event Integration
 
 ```tsx
-import { useAIDevtools } from '@ai-sdk-tools/devtools';
+import { useAIDevtools } from '@raimonade/devtools';
 
 function MyComponent() {
   const { 

@@ -1,4 +1,4 @@
-# @ai-sdk-tools/ocr
+# @raimonade/ocr
 
 Extract structured data from invoices and receipts using AI SDK with intelligent provider fallback.
 
@@ -15,15 +15,15 @@ Extract structured data from invoices and receipts using AI SDK with intelligent
 ## Installation
 
 ```bash
-npm install @ai-sdk-tools/ocr
+npm install @raimonade/ocr
 # or
-bun add @ai-sdk-tools/ocr
+bun add @raimonade/ocr
 ```
 
 ## Quick Start
 
 ```typescript
-import { ocr } from '@ai-sdk-tools/ocr';
+import { ocr } from '@raimonade/ocr';
 
 // Extract invoice data
 const invoice = await ocr(imageBuffer, 'invoice');
@@ -32,7 +32,7 @@ const invoice = await ocr(imageBuffer, 'invoice');
 const receipt = await ocr(imageUrl, 'receipt');
 
 // With custom schema
-import { invoiceSchema } from '@ai-sdk-tools/ocr';
+import { invoiceSchema } from '@raimonade/ocr';
 const customInvoice = await ocr(imageFile, invoiceSchema);
 ```
 
@@ -80,13 +80,13 @@ All options are optional:
 ## Predefined Schemas
 
 ```typescript
-import { invoiceSchema, receiptSchema } from '@ai-sdk-tools/ocr';
+import { invoiceSchema, receiptSchema } from '@raimonade/ocr';
 ```
 
 ## Error Handling
 
 ```typescript
-import { OCRError } from '@ai-sdk-tools/ocr';
+import { OCRError } from '@raimonade/ocr';
 
 try {
   const result = await ocr(image, 'invoice');

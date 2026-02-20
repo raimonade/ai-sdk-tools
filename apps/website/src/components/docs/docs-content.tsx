@@ -89,7 +89,7 @@ export default function DocsContent() {
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"
             >
               <h3 className="text-lg font-medium mb-4 group-hover:text-white transition-colors">
-                @ai-sdk-tools/agents
+                @raimonade/ai-sdk-tools-agents
               </h3>
               <p className="text-sm text-secondary mb-6">
                 Multi-agent orchestration with automatic handoffs and routing.
@@ -106,7 +106,7 @@ export default function DocsContent() {
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"
             >
               <h3 className="text-lg font-medium mb-4 group-hover:text-white transition-colors">
-                @ai-sdk-tools/store
+                @raimonade/ai-sdk-tools-store
               </h3>
               <p className="text-sm text-secondary mb-6">
                 Global state management for AI applications. Drop-in replacement
@@ -122,7 +122,7 @@ export default function DocsContent() {
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"
             >
               <h3 className="text-lg font-medium mb-4 group-hover:text-white transition-colors">
-                @ai-sdk-tools/devtools
+                @raimonade/ai-sdk-tools-devtools
               </h3>
               <p className="text-sm text-secondary mb-6">
                 Powerful debugging and monitoring tool for AI applications with
@@ -138,7 +138,7 @@ export default function DocsContent() {
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"
             >
               <h3 className="text-lg font-medium mb-4 group-hover:text-white transition-colors">
-                @ai-sdk-tools/artifacts
+                @raimonade/ai-sdk-tools-artifacts
               </h3>
               <p className="text-sm text-secondary mb-6">
                 Advanced streaming interfaces for AI applications with
@@ -154,7 +154,7 @@ export default function DocsContent() {
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"
             >
               <h3 className="text-lg font-medium mb-4 group-hover:text-white transition-colors">
-                @ai-sdk-tools/cache
+                @raimonade/ai-sdk-tools-cache
               </h3>
               <p className="text-sm text-secondary mb-6">
                 Universal caching for AI SDK tools. Cache expensive operations
@@ -205,7 +205,7 @@ export default function DocsContent() {
             </Link>
 
             <a
-              href="https://github.com/midday-ai/ai-sdk-tools"
+              href="https://github.com/raimonade/ai-sdk-tools"
               target="_blank"
               rel="noopener noreferrer"
               className="group border border-[#2a2a2a] hover:border-[#404040] transition-colors p-8"

@@ -359,7 +359,7 @@ export function parseEventFromDataPart(
     };
   }
 
-  // Handle agent orchestration data events (from @ai-sdk-tools/agents)
+  // Handle agent orchestration data events (from @raimonade/ai-sdk-tools-agents)
   if (dataPart.type === "data-agent-status") {
     const agentData = dataPart.data || {};
     return {

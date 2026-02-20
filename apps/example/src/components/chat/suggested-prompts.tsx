@@ -1,6 +1,6 @@
 "use client";
 
-import { useChatActions, useDataPart } from "ai-sdk-tools/client";
+import { useChatActions, useDataPart } from "@raimonade/ai-sdk-tools/client";
 import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 

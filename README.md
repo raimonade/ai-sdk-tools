@@ -15,63 +15,63 @@ Essential utilities for building production-ready AI applications with Vercel AI
 Install everything in one package:
 
 ```bash
-npm install ai-sdk-tools
+npm install @raimonade/ai-sdk-tools
 ```
 
 Import what you need:
 
 ```typescript
 // Server-side
-import { Agent, artifact, cached } from 'ai-sdk-tools';
+import { Agent, artifact, cached } from '@raimonade/ai-sdk-tools';
 
 // Client-side
-import { useChat, useArtifact, AIDevtools } from 'ai-sdk-tools/client';
+import { useChat, useArtifact, AIDevtools } from '@raimonade/ai-sdk-tools/client';
 ```
 
 ### Individual Packages
 
 Or install only what you need:
 
-### [@ai-sdk-tools/store](./packages/store)
+### [@raimonade/store](./packages/store)
 AI chat state management that eliminates prop drilling. Clean architecture and better performance for chat components.
 
 ```bash
-npm i @ai-sdk-tools/store
+npm i @raimonade/store
 ```
 
-### [@ai-sdk-tools/devtools](./packages/devtools)
+### [@raimonade/devtools](./packages/devtools)
 Development tools for debugging AI applications. Inspect tool calls, messages, and execution flow directly in your app.
 
 ```bash
-npm i @ai-sdk-tools/devtools
+npm i @raimonade/devtools
 ```
 
-### [@ai-sdk-tools/artifacts](./packages/artifacts)
+### [@raimonade/artifacts](./packages/artifacts)
 Stream structured, type-safe artifacts from AI tools to React components. Build dashboards, analytics, and interactive experiences beyond chat.
 
 ```bash
-npm i @ai-sdk-tools/artifacts @ai-sdk-tools/store
+npm i @raimonade/artifacts @raimonade/store
 ```
 
-### [@ai-sdk-tools/agents](./packages/agents)
+### [@raimonade/agents](./packages/agents)
 Multi-agent orchestration with automatic handoffs and routing. Build intelligent workflows with specialized agents for any AI provider.
 
 ```bash
-npm i @ai-sdk-tools/agents ai zod
+npm i @raimonade/agents ai zod
 ```
 
-### [@ai-sdk-tools/cache](./packages/cache)
+### [@raimonade/cache](./packages/cache)
 Universal caching for AI SDK tools. Cache expensive operations with zero configuration - works with regular tools, streaming, and artifacts.
 
 ```bash
-npm i @ai-sdk-tools/cache
+npm i @raimonade/cache
 ```
 
-### [@ai-sdk-tools/memory](./packages/memory)
+### [@raimonade/memory](./packages/memory)
 Persistent memory system for AI agents. Add long-term memory with support for multiple storage backends (In-Memory, Upstash Redis, Drizzle).
 
 ```bash
-npm i @ai-sdk-tools/memory
+npm i @raimonade/memory
 ```
 
 ## Getting Started

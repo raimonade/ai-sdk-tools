@@ -1,6 +1,6 @@
 "use client";
 
-import { useArtifacts } from "ai-sdk-tools/client";
+import { useArtifacts } from "@raimonade/ai-sdk-tools/client";
 import { ChevronDown, X } from "lucide-react";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useCallback } from "react";

@@ -1,4 +1,4 @@
-import { createLogger } from "@ai-sdk-tools/debug";
+import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 import type { RedisClientType } from "redis";
 import type {
   ChatSession,
@@ -81,7 +81,7 @@ export interface RedisProviderOptions {
  * @example With ioredis
  * ```typescript
  * import Redis from "ioredis";
- * import { RedisProvider } from "@ai-sdk-tools/memory/redis";
+ * import { RedisProvider } from "@raimonade/ai-sdk-tools-memory/redis";
  *
  * const redis = new Redis(process.env.REDIS_URL);
  * const memory = new RedisProvider(redis);
@@ -90,7 +90,7 @@ export interface RedisProviderOptions {
  * @example With redis package and custom options
  * ```typescript
  * import { createClient } from "redis";
- * import { RedisProvider } from "@ai-sdk-tools/memory/redis";
+ * import { RedisProvider } from "@raimonade/ai-sdk-tools-memory/redis";
  *
  * const redis = createClient({ url: process.env.REDIS_URL });
  * await redis.connect();

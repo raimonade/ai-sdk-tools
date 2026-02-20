@@ -1,7 +1,7 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { useArtifacts } from "ai-sdk-tools/client";
+import { useArtifacts } from "@raimonade/ai-sdk-tools/client";
 import { BarChart3 } from "lucide-react";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import {

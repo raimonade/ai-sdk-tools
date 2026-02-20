@@ -1,6 +1,6 @@
 {
-  "name": "@ai-sdk-tools/ocr",
-  "version": "1.2.0",
+  "name": "@raimonade/ai-sdk-tools-ocr",
+  "version": "2.0.0",
   "description": "Extract structured data from invoices and receipts using AI SDK with intelligent provider fallback",
   "keywords": [
     "ai",
@@ -15,13 +15,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git",
+    "url": "https://github.com/raimonade/ai-sdk-tools.git",
     "directory": "packages/ocr"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools/tree/main/packages/ocr#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools/tree/main/packages/ocr#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -45,7 +45,7 @@
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "ai": "^5.0.82",
+    "ai": "^6.0.3",
     "zod": "^4.1.12"
   },
   "peerDependenciesMeta": {
@@ -61,12 +61,13 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "zod": "^4.1.12",
-    "ai": "^5.0.97"
+    "ai": "^6.0.3"
   },
   "optionalDependencies": {
     "unpdf": "^1.4.0"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   },
   "dependencies": {}

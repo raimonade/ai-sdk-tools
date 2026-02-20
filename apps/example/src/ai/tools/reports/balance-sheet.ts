@@ -1,4 +1,4 @@
-import { getWriter } from "@ai-sdk-tools/artifacts";
+import { getWriter } from "@raimonade/ai-sdk-tools-artifacts";
 import { tool } from "ai";
 import { z } from "zod";
 import { BalanceSheetArtifact } from "@/ai/artifacts/balance-sheet";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useArtifact } from "ai-sdk-tools/client";
+import { useArtifact } from "@raimonade/ai-sdk-tools/client";
 import { BarChart3, DollarSign, TrendingUp, Users } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { memo, useMemo } from "react";

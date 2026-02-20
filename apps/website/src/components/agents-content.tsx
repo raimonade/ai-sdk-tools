@@ -27,7 +27,7 @@ export default function AgentsContent() {
             </p>
 
             {/* Terminal */}
-            <InstallScriptTabs packageName="@ai-sdk-tools/agents @ai-sdk-tools/memory ai zod" />
+            <InstallScriptTabs packageName="@raimonade/ai-sdk-tools-agents @raimonade/ai-sdk-tools-memory ai zod" />
 
             {/* Used by */}
             <div className="space-y-6 max-w-xl">
@@ -69,8 +69,8 @@ export default function AgentsContent() {
                 className="text-xs font-mono leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html:
-                    highlight(`import { Agent } from '@ai-sdk-tools/agents'
-import { DrizzleProvider } from '@ai-sdk-tools/memory/drizzle'
+                    highlight(`import { Agent } from '@raimonade/ai-sdk-tools-agents'
+import { DrizzleProvider } from '@raimonade/ai-sdk-tools-memory/drizzle'
 import { openai } from '@ai-sdk/openai'
 
 const mathAgent = new Agent({
@@ -286,7 +286,7 @@ export async function POST(req: Request) {
                   className="text-xs font-mono leading-relaxed"
                   dangerouslySetInnerHTML={{
                     __html: highlight(`// Specialized agents for each domain
-import { Agent } from '@ai-sdk-tools/agents'
+import { Agent } from '@raimonade/ai-sdk-tools-agents'
 import { openai } from '@ai-sdk/openai'
 
 const mathAgent = new Agent({
@@ -332,11 +332,11 @@ const orchestrator = new Agent({
               <div>
                 <span className="text-secondary">git: (main)$ </span>
                 <span className="text-white">
-                  npm i @ai-sdk-tools/agents ai zod
+                  npm i @raimonade/ai-sdk-tools-agents ai zod
                 </span>
               </div>
               <CopyButton
-                text="npm i @ai-sdk-tools/agents ai zod"
+                text="npm i @raimonade/ai-sdk-tools-agents ai zod"
                 className="ml-4 hover:text-white"
                 size={16}
               />

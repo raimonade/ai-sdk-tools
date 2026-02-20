@@ -37,12 +37,12 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/agents@1.0.0
-  - @ai-sdk-tools/artifacts@1.0.0
-  - @ai-sdk-tools/cache@1.0.0
-  - @ai-sdk-tools/devtools@1.0.0
-  - @ai-sdk-tools/memory@1.0.0
-  - @ai-sdk-tools/store@1.0.0
+  - @raimonade/agents@1.0.0
+  - @raimonade/artifacts@1.0.0
+  - @raimonade/cache@1.0.0
+  - @raimonade/devtools@1.0.0
+  - @raimonade/memory@1.0.0
+  - @raimonade/store@1.0.0
 
 ## 0.10.0
 
@@ -55,12 +55,12 @@
 - Routine release.
 - Updated dependencies
 - Updated dependencies [61efe54]
-  - @ai-sdk-tools/agents@0.9.3
-  - @ai-sdk-tools/artifacts@0.9.1
-  - @ai-sdk-tools/cache@0.9.1
-  - @ai-sdk-tools/devtools@0.9.1
-  - @ai-sdk-tools/memory@0.9.1
-  - @ai-sdk-tools/store@0.9.1
+  - @raimonade/agents@0.9.3
+  - @raimonade/artifacts@0.9.1
+  - @raimonade/cache@0.9.1
+  - @raimonade/devtools@0.9.1
+  - @raimonade/memory@0.9.1
+  - @raimonade/store@0.9.1
 
 ## 0.4.0
 
@@ -71,8 +71,8 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ai-sdk-tools/artifacts@0.8.1
-  - @ai-sdk-tools/cache@0.7.1
+  - @raimonade/artifacts@0.8.1
+  - @raimonade/cache@0.7.1
 
 ## 0.1.0
 

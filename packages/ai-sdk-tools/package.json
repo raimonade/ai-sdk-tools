@@ -1,6 +1,6 @@
 {
-  "name": "ai-sdk-tools",
-  "version": "1.2.0",
+  "name": "@raimonade/ai-sdk-tools",
+  "version": "2.0.0",
   "description": "Complete toolkit for building AI applications with the Vercel AI SDK - agents, state management, caching, artifacts, devtools, and memory",
   "keywords": [
     "ai",
@@ -28,13 +28,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/midday-ai/ai-sdk-tools.git",
+    "url": "https://github.com/raimonade/ai-sdk-tools.git",
     "directory": "packages/ai-sdk-tools"
   },
   "bugs": {
-    "url": "https://github.com/midday-ai/ai-sdk-tools/issues"
+    "url": "https://github.com/raimonade/ai-sdk-tools/issues"
   },
-  "homepage": "https://github.com/midday-ai/ai-sdk-tools#readme",
+  "homepage": "https://github.com/raimonade/ai-sdk-tools#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -64,7 +64,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "ai": ">=5.0.0",
+    "ai": ">=6.0.0",
     "@ai-sdk/react": ">=2.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=16.8.0",
@@ -92,19 +92,20 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "zod": "^4.1.12",
-    "ai": "^5.0.97",
-    "@ai-sdk-tools/agents": "workspace:*",
-    "@ai-sdk-tools/artifacts": "workspace:*",
-    "@ai-sdk-tools/cache": "workspace:*",
-    "@ai-sdk-tools/devtools": "workspace:*",
-    "@ai-sdk-tools/memory": "workspace:*",
-    "@ai-sdk-tools/store": "workspace:*"
+    "zod": "^4.2.1",
+    "ai": "^6.0.3",
+    "@raimonade/ai-sdk-tools-agents": "workspace:*",
+    "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
+    "@raimonade/ai-sdk-tools-cache": "workspace:*",
+    "@raimonade/ai-sdk-tools-devtools": "workspace:*",
+    "@raimonade/ai-sdk-tools-memory": "workspace:*",
+    "@raimonade/ai-sdk-tools-store": "workspace:*"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }

@@ -5,7 +5,7 @@ Complete toolkit for building advanced AI applications with the [Vercel AI SDK](
 ## Installation
 
 ```bash
-npm install ai-sdk-tools
+npm install @raimonade/ai-sdk-tools
 ```
 
 This installs all tools in a single package with namespaced exports.
@@ -34,7 +34,7 @@ This package includes all AI SDK tools:
 Import tools directly from the package:
 
 ```typescript
-import { Agent, artifact, cached, useChat, AIDevtools, InMemoryProvider } from 'ai-sdk-tools';
+import { Agent, artifact, cached, useChat, AIDevtools, InMemoryProvider } from '@raimonade/ai-sdk-tools';
 ```
 
 ### Multi-Agent Orchestration
@@ -42,7 +42,7 @@ import { Agent, artifact, cached, useChat, AIDevtools, InMemoryProvider } from '
 Build intelligent workflows with specialized agents:
 
 ```typescript
-import { Agent } from 'ai-sdk-tools';
+import { Agent } from '@raimonade/ai-sdk-tools';
 import { openai } from '@ai-sdk/openai';
 
 const supportAgent = new Agent({
@@ -71,7 +71,7 @@ const result = await supportAgent.generateText({
 Manage chat state globally with Zustand:
 
 ```typescript
-import { useChat } from 'ai-sdk-tools';
+import { useChat } from '@raimonade/ai-sdk-tools';
 
 export const useChatHook = useChat({
   api: '/api/chat',
@@ -97,7 +97,7 @@ function ChatComponent() {
 Cache expensive tool executions to reduce costs and improve performance:
 
 ```typescript
-import { cached } from 'ai-sdk-tools';
+import { cached } from '@raimonade/ai-sdk-tools';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -122,7 +122,7 @@ const weatherTool = cached(
 Stream structured artifacts from AI tools to React components:
 
 ```typescript
-import { artifact, useArtifact } from 'ai-sdk-tools';
+import { artifact, useArtifact } from '@raimonade/ai-sdk-tools';
 import { z } from 'zod';
 
 const chartArtifact = artifact({
@@ -155,7 +155,7 @@ const { data, status } = useArtifact(chartArtifact);
 Debug and monitor your AI applications in real-time:
 
 ```typescript
-import { AIDevtools } from 'ai-sdk-tools';
+import { AIDevtools } from '@raimonade/ai-sdk-tools';
 
 function App() {
   return (
@@ -172,7 +172,7 @@ function App() {
 Add long-term memory to your agents:
 
 ```typescript
-import { Agent, InMemoryProvider } from 'ai-sdk-tools';
+import { Agent, InMemoryProvider } from '@raimonade/ai-sdk-tools';
 import { openai } from '@ai-sdk/openai';
 
 const memoryProvider = new InMemoryProvider();
@@ -192,12 +192,12 @@ const agent = new Agent({
 If you only need specific tools, you can install them individually:
 
 ```bash
-npm install @ai-sdk-tools/agents
-npm install @ai-sdk-tools/artifacts
-npm install @ai-sdk-tools/cache
-npm install @ai-sdk-tools/devtools
-npm install @ai-sdk-tools/memory
-npm install @ai-sdk-tools/store
+npm install @raimonade/agents
+npm install @raimonade/artifacts
+npm install @raimonade/cache
+npm install @raimonade/devtools
+npm install @raimonade/memory
+npm install @raimonade/store
 ```
 
 Each package can be used independently with its own API. See individual package documentation for details.
@@ -206,7 +206,7 @@ Each package can be used independently with its own API. See individual package 
 
 - [Full Documentation](https://aisdk.tools)
 - [API Reference](https://aisdk.tools/docs)
-- [Examples](https://github.com/midday-ai/ai-sdk-tools/tree/main/apps/example)
+- [Examples](https://github.com/raimonade/ai-sdk-tools/tree/main/apps/example)
 
 ## Features
 
@@ -232,7 +232,7 @@ MIT © [Midday](https://midday.ai)
 
 ## Links
 
-- [GitHub](https://github.com/midday-ai/ai-sdk-tools)
-- [Issues](https://github.com/midday-ai/ai-sdk-tools/issues)
-- [Discussions](https://github.com/midday-ai/ai-sdk-tools/discussions)
+- [GitHub](https://github.com/raimonade/ai-sdk-tools)
+- [Issues](https://github.com/raimonade/ai-sdk-tools/issues)
+- [Discussions](https://github.com/raimonade/ai-sdk-tools/discussions)
 
