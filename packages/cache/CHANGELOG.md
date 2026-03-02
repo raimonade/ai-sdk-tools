@@ -1,5 +1,11 @@
 # @raimonade/cache
 
+## 2.0.1
+
+### Patch Changes
+
+- 4cf21f1: Initial publish to GitHub Packages with renamed package scopes
+
 ## 2.0.0
 
 ### Minor Changes
