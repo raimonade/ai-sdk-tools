@@ -67,6 +67,14 @@ export interface FilterOptions {
   };
 }
 
+// Button placement — CSS position values (e.g. "1rem", "80px")
+export interface ButtonPosition {
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+}
+
 // Configuration for the devtools
 export interface DevtoolsConfig {
   enabled: boolean;
@@ -75,6 +83,8 @@ export interface DevtoolsConfig {
   height?: number;
   width?: number;
   theme?: "light" | "dark" | "auto";
+  /** Position of the toggle button (default: bottom-right) */
+  buttonPosition?: ButtonPosition;
   streamCapture?: {
     enabled: boolean;
     endpoint: string;

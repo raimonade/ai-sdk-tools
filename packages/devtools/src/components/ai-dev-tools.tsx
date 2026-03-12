@@ -131,6 +131,7 @@ export function AIDevtools({
         eventCount={events.length}
         hasNewEvents={hasNewEvents && !isOpen}
         className={className}
+        position={finalConfig.buttonPosition}
       />
 
       {/* Devtools panel */}

@@ -23,6 +23,7 @@ export type {
   AgentNode as AgentNodeData,
   AIEvent,
   AIEventType,
+  ButtonPosition,
   DevtoolsConfig,
   FilterOptions,
   ToolCallSession,

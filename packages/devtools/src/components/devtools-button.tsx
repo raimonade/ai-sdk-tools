@@ -1,10 +1,13 @@
 "use client";
 
+import type { ButtonPosition } from "../types";
+
 interface DevtoolsButtonProps {
   onToggle: () => void;
   eventCount: number;
   hasNewEvents: boolean;
   className?: string;
+  position?: ButtonPosition;
 }
 
 export function DevtoolsButton({
@@ -12,12 +15,23 @@ export function DevtoolsButton({
   eventCount,
   hasNewEvents,
   className = "",
+  position,
 }: DevtoolsButtonProps) {
+  const positionStyle = position
+    ? {
+        ...(position.top != null && { top: position.top }),
+        ...(position.right != null && { right: position.right }),
+        ...(position.bottom != null && { bottom: position.bottom }),
+        ...(position.left != null && { left: position.left }),
+      }
+    : undefined;
+
   return (
     <button
       type="button"
       onClick={onToggle}
       className={`ai-devtools-button ${hasNewEvents ? "receiving-events" : ""} ${className}`}
+      style={positionStyle}
       title={`ai-devtools [${eventCount}]`}
     >
       {/* AI SDK Tools Logo */}
