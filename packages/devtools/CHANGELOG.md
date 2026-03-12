@@ -1,5 +1,15 @@
 # @raimonade/devtools
 
+## 3.0.0
+
+### Minor Changes
+
+- 1dc6965: Add configurable button position; fix z-index so button is always reachable above panel
+
+### Patch Changes
+
+- @raimonade/ai-sdk-tools-store@3.0.0
+
 ## 2.0.1
 
 ### Patch Changes

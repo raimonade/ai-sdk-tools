@@ -1,5 +1,11 @@
 ## 0.9.3
 
+## 3.0.0
+
+### Minor Changes
+
+- a91e6f5: Add persistent agent-trace data part to message history for post-hoc step inspection
+
 ## 2.0.1
 
 ### Patch Changes
