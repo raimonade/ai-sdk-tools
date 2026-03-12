@@ -1,7 +1,7 @@
 {
   "name": "@raimonade/ai-sdk-tools-artifacts",
   "private": false,
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Advanced streaming interfaces for AI applications",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
