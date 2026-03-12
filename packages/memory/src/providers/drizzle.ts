@@ -1,6 +1,7 @@
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, like, ne, or, sql } from "drizzle-orm";
 import type {
   ChatSession,
+  ChatSummary,
   ConversationMessage,
   MemoryProvider,
   MemoryScope,
@@ -51,6 +52,7 @@ export interface ChatsTable {
   chatId: any;
   userId: any;
   title: any;
+  summary: any;
   createdAt: any;
   updatedAt: any;
   messageCount: any;
@@ -62,7 +64,7 @@ export interface ChatsTable {
 export interface DrizzleProviderConfig<
   TWM extends WorkingMemoryTable,
   TMsg extends ConversationMessagesTable,
-  TChat extends ChatsTable = ChatsTable
+  TChat extends ChatsTable = ChatsTable,
 > {
   /** Working memory table */
   workingMemoryTable: TWM;
@@ -90,13 +92,13 @@ export interface DrizzleProviderConfig<
 export class DrizzleProvider<
   TWM extends WorkingMemoryTable,
   TMsg extends ConversationMessagesTable,
-  TChat extends ChatsTable = ChatsTable
+  TChat extends ChatsTable = ChatsTable,
 > implements MemoryProvider
 {
   constructor(
     // Accepts any Drizzle database instance (postgres, mysql, sqlite adapters all have different types)
     private db: any,
-    private config: DrizzleProviderConfig<TWM, TMsg, TChat>
+    private config: DrizzleProviderConfig<TWM, TMsg, TChat>,
   ) {}
 
   async getWorkingMemory(params: {
@@ -192,8 +194,8 @@ export class DrizzleProvider<
       whereConditions.push(
         or(
           eq(messagesTable.userId, params.userId),
-          eq(messagesTable.userId, null)
-        )!
+          eq(messagesTable.userId, null),
+        )!,
       );
     }
 
@@ -209,8 +211,8 @@ export class DrizzleProvider<
       .orderBy(
         desc(messagesTable.timestamp),
         desc(
-          sql`CASE WHEN ${messagesTable.role} = 'assistant' THEN 1 ELSE 0 END`
-        )
+          sql`CASE WHEN ${messagesTable.role} = 'assistant' THEN 1 ELSE 0 END`,
+        ),
       )
       .limit(params.limit || 100);
 
@@ -249,12 +251,13 @@ export class DrizzleProvider<
       .limit(1);
 
     if (existing.length > 0) {
-      // Update existing - preserve title if new chat doesn't have one
+      // Update existing - preserve title and summary if new chat doesn't have them
       await this.db
         .update(chatsTable)
         .set({
           userId: chat.userId || null,
           title: chat.title || existing[0].title || null,
+          summary: chat.summary || existing[0].summary || null,
           updatedAt: chat.updatedAt,
           messageCount: chat.messageCount,
         })
@@ -265,6 +268,7 @@ export class DrizzleProvider<
         chatId: chat.chatId,
         userId: chat.userId || null,
         title: chat.title || null,
+        summary: chat.summary || null,
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
         messageCount: chat.messageCount,
@@ -315,6 +319,7 @@ export class DrizzleProvider<
       chatId: row.chatId,
       userId: row.userId || undefined,
       title: row.title || undefined,
+      summary: row.summary || undefined,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt),
       messageCount: row.messageCount,
@@ -325,7 +330,7 @@ export class DrizzleProvider<
     if (params.search) {
       const searchLower = params.search.toLowerCase();
       chats = chats.filter((chat: ChatSession) =>
-        chat.title?.toLowerCase().includes(searchLower)
+        chat.title?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -349,6 +354,7 @@ export class DrizzleProvider<
       chatId: row.chatId,
       userId: row.userId || undefined,
       title: row.title || undefined,
+      summary: row.summary || undefined,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt),
       messageCount: row.messageCount,
@@ -386,6 +392,71 @@ export class DrizzleProvider<
         messageCount: 0,
       });
     }
+  }
+
+  async updateChatSummary(chatId: string, summary: string): Promise<void> {
+    const { chatsTable } = this.config;
+    if (!chatsTable) return;
+
+    // Check if chat exists
+    const existing = await this.db
+      .select()
+      .from(chatsTable)
+      .where(eq(chatsTable.chatId, chatId))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await this.db
+        .update(chatsTable)
+        .set({
+          summary,
+          updatedAt: new Date(),
+        })
+        .where(eq(chatsTable.chatId, chatId));
+    } else {
+      // Chat doesn't exist yet, create it with the summary
+      await this.saveChat({
+        chatId,
+        summary,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        messageCount: 0,
+      });
+    }
+  }
+
+  async loadChatSummaries(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]> {
+    const { chatsTable } = this.config;
+    if (!chatsTable) return [];
+
+    const result = await this.db
+      .select({
+        chatId: chatsTable.chatId,
+        title: chatsTable.title,
+        summary: chatsTable.summary,
+        updatedAt: chatsTable.updatedAt,
+      })
+      .from(chatsTable)
+      .where(
+        and(
+          eq(chatsTable.userId, params.userId),
+          ne(chatsTable.chatId, params.excludeChatId),
+          isNotNull(chatsTable.summary),
+        ),
+      )
+      .orderBy(desc(chatsTable.updatedAt))
+      .limit(params.limit ?? 10);
+
+    return result.map((row: any) => ({
+      chatId: row.chatId,
+      title: row.title || undefined,
+      summary: row.summary,
+      updatedAt: new Date(row.updatedAt),
+    }));
   }
 
   async deleteChat(chatId: string): Promise<void> {

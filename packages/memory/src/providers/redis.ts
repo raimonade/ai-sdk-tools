@@ -2,6 +2,7 @@ import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 import type { RedisClientType } from "redis";
 import type {
   ChatSession,
+  ChatSummary,
   ConversationMessage,
   MemoryProvider,
   MemoryScope,
@@ -459,8 +460,9 @@ export class RedisProvider implements MemoryProvider {
     const chatData: Record<string, string> = {
       chatId: chat.chatId,
       userId: chat.userId || "",
-      // Preserve existing title if new chat doesn't have one
+      // Preserve existing title and summary if new chat doesn't have them
       title: chat.title || existing?.title || "",
+      summary: chat.summary || existing?.summary || "",
       createdAt: chat.createdAt.getTime().toString(),
       updatedAt: chat.updatedAt.getTime().toString(),
       messageCount: chat.messageCount.toString(),
@@ -521,6 +523,7 @@ export class RedisProvider implements MemoryProvider {
             chatId: data.chatId || chatId,
             userId: data.userId || undefined,
             title: data.title || undefined,
+            summary: data.summary || undefined,
             createdAt: new Date(parseInt(data.createdAt, 10)),
             updatedAt: new Date(parseInt(data.updatedAt, 10)),
             messageCount: parseInt(data.messageCount || "0", 10),
@@ -560,6 +563,7 @@ export class RedisProvider implements MemoryProvider {
             chatId: data.chatId || chatId,
             userId: data.userId || undefined,
             title: data.title || undefined,
+            summary: data.summary || undefined,
             createdAt: new Date(parseInt(data.createdAt, 10)),
             updatedAt: new Date(parseInt(data.updatedAt, 10)),
             messageCount: parseInt(data.messageCount || "0", 10),
@@ -598,6 +602,7 @@ export class RedisProvider implements MemoryProvider {
       chatId: data.chatId || chatId,
       userId: data.userId || undefined,
       title: data.title || undefined,
+      summary: data.summary || undefined,
       createdAt: new Date(parseInt(data.createdAt, 10)),
       updatedAt: new Date(parseInt(data.updatedAt, 10)),
       messageCount: parseInt(data.messageCount || "0", 10),
@@ -643,6 +648,79 @@ export class RedisProvider implements MemoryProvider {
       await this.saveChat(chatData);
       return; // saveChat already handles sorted sets, so we can return early
     }
+  }
+
+  async updateChatSummary(chatId: string, summary: string): Promise<void> {
+    const chatKey = `${this.prefix}chat:${chatId}`;
+    const data = await this.hgetall(chatKey);
+
+    const updatedAt = Date.now();
+
+    if (data && Object.keys(data).length > 0) {
+      const chatData: Record<string, string> = {
+        ...data,
+        summary,
+        updatedAt: updatedAt.toString(),
+      };
+
+      await this.hset(chatKey, chatData);
+
+      // Update score in global sorted set
+      const globalChatsKey = `${this.prefix}chats:global`;
+      await this.zadd(globalChatsKey, updatedAt, chatId);
+
+      // Update score in user's sorted set if userId exists
+      if (data.userId) {
+        const userChatsKey = `${this.prefix}chats:${data.userId}`;
+        await this.zadd(userChatsKey, updatedAt, chatId);
+      }
+    } else {
+      // Chat doesn't exist yet, create it with the summary
+      const now = Date.now();
+      const chatData: ChatSession = {
+        chatId,
+        summary,
+        createdAt: new Date(now),
+        updatedAt: new Date(updatedAt),
+        messageCount: 0,
+      };
+      await this.saveChat(chatData);
+    }
+  }
+
+  async loadChatSummaries(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]> {
+    const limit = params.limit ?? 10;
+    const userChatsKey = `${this.prefix}chats:${params.userId}`;
+
+    // Fetch recent chat IDs for this user (fetch extra to account for filtering)
+    const chatIds = await this.zrevrange(userChatsKey, 0, limit * 3 - 1);
+    if (chatIds.length === 0) return [];
+
+    const summaries: ChatSummary[] = [];
+
+    for (const chatId of chatIds) {
+      if (chatId === params.excludeChatId) continue;
+
+      const chatKey = `${this.prefix}chat:${chatId}`;
+      const data = await this.hgetall(chatKey);
+      if (!data || Object.keys(data).length === 0) continue;
+      if (!data.summary) continue;
+
+      summaries.push({
+        chatId: data.chatId || chatId,
+        title: data.title || undefined,
+        summary: data.summary,
+        updatedAt: new Date(parseInt(data.updatedAt, 10)),
+      });
+
+      if (summaries.length >= limit) break;
+    }
+
+    return summaries;
   }
 
   async deleteChat(chatId: string): Promise<void> {

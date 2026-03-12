@@ -150,6 +150,7 @@ export function createPgChatsSchema() {
     chatId: (t: any) => t.text("chat_id").primaryKey(),
     userId: (t: any) => t.text("user_id"),
     title: (t: any) => t.text("title"),
+    summary: (t: any) => t.text("summary"),
     createdAt: (t: any) => t.timestamp("created_at").notNull(),
     updatedAt: (t: any) => t.timestamp("updated_at").notNull(),
     messageCount: (t: any) => t.integer("message_count").notNull().default(0),
@@ -172,6 +173,7 @@ export function createMysqlChatsSchema() {
     chatId: (t: any) => t.varchar("chat_id", { length: 255 }).primaryKey(),
     userId: (t: any) => t.varchar("user_id", { length: 255 }),
     title: (t: any) => t.varchar("title", { length: 500 }),
+    summary: (t: any) => t.text("summary"),
     createdAt: (t: any) => t.timestamp("created_at").notNull(),
     updatedAt: (t: any) => t.timestamp("updated_at").notNull(),
     messageCount: (t: any) => t.int("message_count").notNull().default(0),
@@ -194,6 +196,7 @@ export function createSqliteChatsSchema() {
     chatId: (t: any) => t.text("chat_id").primaryKey(),
     userId: (t: any) => t.text("user_id"),
     title: (t: any) => t.text("title"),
+    summary: (t: any) => t.text("summary"),
     createdAt: (t: any) =>
       t.integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: (t: any) =>
@@ -234,6 +237,7 @@ export const SQL_SCHEMAS = {
         chat_id TEXT PRIMARY KEY,
         user_id TEXT,
         title TEXT,
+        summary TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
         message_count INTEGER NOT NULL DEFAULT 0
@@ -269,6 +273,7 @@ export const SQL_SCHEMAS = {
         chat_id VARCHAR(255) PRIMARY KEY,
         user_id VARCHAR(255),
         title VARCHAR(500),
+        summary TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         message_count INT NOT NULL DEFAULT 0
@@ -304,6 +309,7 @@ export const SQL_SCHEMAS = {
         chat_id TEXT PRIMARY KEY,
         user_id TEXT,
         title TEXT,
+        summary TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL,
         message_count INTEGER NOT NULL DEFAULT 0

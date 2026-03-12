@@ -1,4 +1,8 @@
-import type { ConversationMessage, WorkingMemory } from "./types.js";
+import type {
+  ChatSummary,
+  ConversationMessage,
+  WorkingMemory,
+} from "./types.js";
 
 /**
  * Default working memory template
@@ -62,4 +66,19 @@ ${template}
 
 **Critical:** After calling updateWorkingMemory, respond to the user confirming the update.
 `.trim();
+}
+
+/**
+ * Format chat summaries for system prompt injection
+ */
+export function formatChatSummaries(summaries: ChatSummary[]): string {
+  if (summaries.length === 0) return "";
+
+  const lines = summaries.map((s) => {
+    const title = s.title ?? "Untitled";
+    const date = s.updatedAt.toLocaleDateString();
+    return `- **${title}** (${date}): ${s.summary}`;
+  });
+
+  return `\n## Recent Chat Summaries\nThese are summaries from your recent conversations with this user:\n\n${lines.join("\n")}\n`;
 }

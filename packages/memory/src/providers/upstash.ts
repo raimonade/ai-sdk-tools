@@ -2,6 +2,7 @@ import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 import type { Redis } from "@upstash/redis";
 import type {
   ChatSession,
+  ChatSummary,
   ConversationMessage,
   MemoryProvider,
   MemoryScope,
@@ -159,8 +160,9 @@ export class UpstashProvider implements MemoryProvider {
       ...chat,
       createdAt: chat.createdAt.getTime(),
       updatedAt: chat.updatedAt.getTime(),
-      // Preserve existing title if new chat doesn't have one
+      // Preserve existing title and summary if new chat doesn't have them
       title: chat.title || (existing?.title as string | undefined),
+      summary: chat.summary || (existing?.summary as string | undefined),
     };
 
     await this.redis.hset(chatKey, chatData);
@@ -328,6 +330,87 @@ export class UpstashProvider implements MemoryProvider {
         member: chatId,
       });
     }
+  }
+
+  async updateChatSummary(chatId: string, summary: string): Promise<void> {
+    const chatKey = `${this.prefix}chat:${chatId}`;
+    const data = await this.redis.hgetall<Record<string, unknown>>(chatKey);
+
+    const updatedAt = Date.now();
+
+    if (data) {
+      const chatData = {
+        ...data,
+        summary,
+        updatedAt,
+      };
+      await this.redis.hset(chatKey, chatData);
+    } else {
+      // Chat doesn't exist yet, create it with the summary
+      const now = Date.now();
+      const chatData: ChatSession = {
+        chatId,
+        summary,
+        createdAt: new Date(now),
+        updatedAt: new Date(updatedAt),
+        messageCount: 0,
+      };
+      await this.saveChat(chatData);
+      return;
+    }
+
+    // Update score in global sorted set
+    const globalChatsKey = `${this.prefix}chats:global`;
+    await this.redis.zadd(globalChatsKey, {
+      score: updatedAt,
+      member: chatId,
+    });
+
+    // Update score in user's sorted set if userId exists
+    if (data.userId) {
+      const userChatsKey = `${this.prefix}chats:${data.userId}`;
+      await this.redis.zadd(userChatsKey, {
+        score: updatedAt,
+        member: chatId,
+      });
+    }
+  }
+
+  async loadChatSummaries(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]> {
+    const limit = params.limit ?? 10;
+    const userChatsKey = `${this.prefix}chats:${params.userId}`;
+
+    // Fetch recent chat IDs for this user (fetch extra to account for filtering)
+    const chatIds = await this.redis.zrange(userChatsKey, 0, limit * 3 - 1, {
+      rev: true,
+    });
+    if (chatIds.length === 0) return [];
+
+    const summaries: ChatSummary[] = [];
+
+    for (const chatId of chatIds) {
+      if (chatId === params.excludeChatId) continue;
+
+      const chatKey = `${this.prefix}chat:${chatId}`;
+      const data = await this.redis.hgetall<Record<string, unknown>>(chatKey);
+      if (!data) continue;
+      if (!data.summary) continue;
+
+      summaries.push({
+        chatId: (data.chatId as string) || (chatId as string),
+        title: (data.title as string) || undefined,
+        summary: data.summary as string,
+        updatedAt: new Date(data.updatedAt as number),
+      });
+
+      if (summaries.length >= limit) break;
+    }
+
+    return summaries;
   }
 
   async deleteChat(chatId: string): Promise<void> {

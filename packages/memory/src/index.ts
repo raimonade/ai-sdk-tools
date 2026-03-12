@@ -2,9 +2,11 @@
 // Note: You can add provider-specific helpers in /providers (to avoid peer dependency conflicts)
 export type {
   ChatSession,
+  ChatSummary,
   ChatsConfig,
   ConversationMessage,
   GenerateSuggestionsConfig,
+  GenerateSummaryConfig,
   GenerateTitleConfig,
   MemoryConfig,
   MemoryProvider,
@@ -15,6 +17,7 @@ export type {
 // Utils
 export {
   DEFAULT_TEMPLATE,
+  formatChatSummaries,
   formatHistory,
   formatWorkingMemory,
   getWorkingMemoryInstructions,

@@ -1,7 +1,8 @@
-import { sql } from "kysely";
 import type { Kysely } from "kysely";
+import { sql } from "kysely";
 import type {
   ChatSession,
+  ChatSummary,
   ConversationMessage,
   MemoryProvider,
   MemoryScope,
@@ -10,12 +11,12 @@ import type {
 } from "../types.js";
 
 type TableName<DB> = Extract<keyof DB, string>;
-type ColumnName<DB, TTable extends TableName<DB>> = Extract<keyof DB[TTable], string>;
+type ColumnName<DB, TTable extends TableName<DB>> = Extract<
+  keyof DB[TTable],
+  string
+>;
 
-export interface KyselyWorkingMemoryMapping<
-  DB,
-  TTable extends TableName<DB>
-> {
+export interface KyselyWorkingMemoryMapping<DB, TTable extends TableName<DB>> {
   table: TTable;
   columns: {
     id: ColumnName<DB, TTable>;
@@ -44,6 +45,7 @@ export interface KyselyChatsMapping<DB, TTable extends TableName<DB>> {
     chatId: ColumnName<DB, TTable>;
     userId: ColumnName<DB, TTable>;
     title: ColumnName<DB, TTable>;
+    summary: ColumnName<DB, TTable>;
     createdAt: ColumnName<DB, TTable>;
     updatedAt: ColumnName<DB, TTable>;
     messageCount: ColumnName<DB, TTable>;
@@ -54,7 +56,7 @@ export interface KyselyProviderConfig<
   DB,
   TWorkingMemory extends TableName<DB>,
   TMessages extends TableName<DB>,
-  TChats extends TableName<DB> = TableName<DB>
+  TChats extends TableName<DB> = TableName<DB>,
 > {
   workingMemory: KyselyWorkingMemoryMapping<DB, TWorkingMemory>;
   messages: KyselyMessagesMapping<DB, TMessages>;
@@ -80,7 +82,7 @@ export class KyselyProvider<
   DB,
   TWorkingMemory extends TableName<DB>,
   TMessages extends TableName<DB>,
-  TChats extends TableName<DB> = TableName<DB>
+  TChats extends TableName<DB> = TableName<DB>,
 > implements MemoryProvider
 {
   private readonly now: () => Date;
@@ -96,7 +98,7 @@ export class KyselyProvider<
       TWorkingMemory,
       TMessages,
       TChats
-    >
+    >,
   ) {
     this.now = config.now ?? (() => new Date());
     this.json = config.json ?? {
@@ -113,18 +115,22 @@ export class KyselyProvider<
     const id = getRequiredScopeId(params.scope, params.chatId, params.userId);
     const { table, columns } = this.config.workingMemory;
 
-    const { rows } = await sql<{ content: unknown; updatedAt: unknown }>
-      `select ${sql.ref(columns.content)} as content, ${sql.ref(
-        columns.updatedAt
-      )} as updatedAt from ${sql.table(table)} where ${sql.ref(columns.id)} = ${id}`
-      .execute(this.db);
+    const { rows } = await sql<{
+      content: unknown;
+      updatedAt: unknown;
+    }>`select ${sql.ref(columns.content)} as content, ${sql.ref(
+      columns.updatedAt,
+    )} as updatedAt from ${sql.table(table)} where ${sql.ref(columns.id)} = ${id}`.execute(
+      this.db,
+    );
 
     const row = rows[0];
 
     if (!row) return null;
 
     return {
-      content: typeof row.content === "string" ? row.content : String(row.content),
+      content:
+        typeof row.content === "string" ? row.content : String(row.content),
       updatedAt: this.parseDate(row.updatedAt, "workingMemory.updatedAt"),
     };
   }
@@ -148,21 +154,26 @@ export class KyselyProvider<
       if (updated) return;
 
       try {
-        await rawInsert(trx, table, [
-          columns.id,
-          columns.scope,
-          columns.chatId,
-          columns.userId,
-          columns.content,
-          columns.updatedAt,
-        ], [
-          id,
-          params.scope,
-          params.chatId ?? null,
-          params.userId ?? null,
-          params.content,
-          now,
-        ]);
+        await rawInsert(
+          trx,
+          table,
+          [
+            columns.id,
+            columns.scope,
+            columns.chatId,
+            columns.userId,
+            columns.content,
+            columns.updatedAt,
+          ],
+          [
+            id,
+            params.scope,
+            params.chatId ?? null,
+            params.userId ?? null,
+            params.content,
+            now,
+          ],
+        );
       } catch (err) {
         const updatedRetry = await rawUpdateById(trx, table, columns.id, id, [
           [columns.content, params.content],
@@ -179,21 +190,29 @@ export class KyselyProvider<
     assertNonBlank("chatId", message.chatId);
 
     const { table, columns } = this.config.messages;
-    const storedContent = stringifyContent(message.content, this.json.stringify);
+    const storedContent = stringifyContent(
+      message.content,
+      this.json.stringify,
+    );
 
-    await rawInsert(this.db, table, [
-      columns.chatId,
-      columns.userId,
-      columns.role,
-      columns.content,
-      columns.timestamp,
-    ], [
-      message.chatId,
-      message.userId ?? null,
-      message.role,
-      storedContent,
-      message.timestamp,
-    ]);
+    await rawInsert(
+      this.db,
+      table,
+      [
+        columns.chatId,
+        columns.userId,
+        columns.role,
+        columns.content,
+        columns.timestamp,
+      ],
+      [
+        message.chatId,
+        message.userId ?? null,
+        message.role,
+        storedContent,
+        message.timestamp,
+      ],
+    );
   }
 
   async getMessages<T = UIMessage>(params: {
@@ -208,7 +227,7 @@ export class KyselyProvider<
 
     const whereSql = params.userId
       ? sql`${sql.ref(columns.chatId)} = ${params.chatId} and (${sql.ref(
-          columns.userId
+          columns.userId,
         )} = ${params.userId} or ${sql.ref(columns.userId)} is null)`
       : sql`${sql.ref(columns.chatId)} = ${params.chatId}`;
 
@@ -217,13 +236,13 @@ export class KyselyProvider<
       role: unknown;
       timestamp: unknown;
     }>`select ${sql.ref(columns.content)} as content, ${sql.ref(
-      columns.role
+      columns.role,
     )} as role, ${sql.ref(columns.timestamp)} as timestamp from ${sql.table(
-      table
+      table,
     )} where ${whereSql} order by ${sql.ref(columns.timestamp)} desc, case when ${sql.ref(
-      columns.role
+      columns.role,
     )} = 'assistant' then 1 else 0 end desc offset 0 rows fetch next ${limit} rows only`.execute(
-      this.db
+      this.db,
     );
 
     const out: UIMessage[] = rows
@@ -241,40 +260,56 @@ export class KyselyProvider<
 
     const { table, columns } = mapping;
 
-    const { rows: existingRows } = await sql<{ title: unknown }>
-      `select ${sql.ref(columns.title)} as title from ${sql.table(
-        table
-      )} where ${sql.ref(columns.chatId)} = ${chat.chatId}`
-      .execute(this.db);
+    const { rows: existingRows } = await sql<{
+      title: unknown;
+      summary: unknown;
+    }>`select ${sql.ref(columns.title)} as title, ${sql.ref(columns.summary)} as summary from ${sql.table(
+      table,
+    )} where ${sql.ref(columns.chatId)} = ${chat.chatId}`.execute(this.db);
     const existing = existingRows[0];
 
     const titleToStore = chat.title ?? existing?.title ?? null;
+    const summaryToStore = chat.summary ?? existing?.summary ?? null;
 
     await this.db.transaction().execute(async (trx) => {
-      const updated = await rawUpdateById(trx, table, columns.chatId, chat.chatId, [
-        [columns.userId, chat.userId ?? null],
-        [columns.title, titleToStore],
-        [columns.updatedAt, chat.updatedAt],
-        [columns.messageCount, chat.messageCount],
-      ]);
+      const updated = await rawUpdateById(
+        trx,
+        table,
+        columns.chatId,
+        chat.chatId,
+        [
+          [columns.userId, chat.userId ?? null],
+          [columns.title, titleToStore],
+          [columns.summary, summaryToStore],
+          [columns.updatedAt, chat.updatedAt],
+          [columns.messageCount, chat.messageCount],
+        ],
+      );
 
       if (updated) return;
 
-      await rawInsert(trx, table, [
-        columns.chatId,
-        columns.userId,
-        columns.title,
-        columns.createdAt,
-        columns.updatedAt,
-        columns.messageCount,
-      ], [
-        chat.chatId,
-        chat.userId ?? null,
-        titleToStore,
-        chat.createdAt,
-        chat.updatedAt,
-        chat.messageCount,
-      ]);
+      await rawInsert(
+        trx,
+        table,
+        [
+          columns.chatId,
+          columns.userId,
+          columns.title,
+          columns.summary,
+          columns.createdAt,
+          columns.updatedAt,
+          columns.messageCount,
+        ],
+        [
+          chat.chatId,
+          chat.userId ?? null,
+          titleToStore,
+          summaryToStore,
+          chat.createdAt,
+          chat.updatedAt,
+          chat.messageCount,
+        ],
+      );
     });
   }
 
@@ -307,23 +342,27 @@ export class KyselyProvider<
       chatId: unknown;
       userId: unknown;
       title: unknown;
+      summary: unknown;
       createdAt: unknown;
       updatedAt: unknown;
       messageCount: unknown;
     }>`select ${sql.ref(columns.chatId)} as chatId, ${sql.ref(
-      columns.userId
+      columns.userId,
     )} as userId, ${sql.ref(columns.title)} as title, ${sql.ref(
-      columns.createdAt
+      columns.summary,
+    )} as summary, ${sql.ref(
+      columns.createdAt,
     )} as createdAt, ${sql.ref(columns.updatedAt)} as updatedAt, ${sql.ref(
-      columns.messageCount
+      columns.messageCount,
     )} as messageCount from ${sql.table(table)} ${whereSql} order by ${sql.ref(
-      columns.updatedAt
+      columns.updatedAt,
     )} desc offset 0 rows fetch next ${lim} rows only`.execute(this.db);
 
     let chats = rows.map((row) => ({
       chatId: String(row.chatId),
       userId: normalizeOptionalString(row.userId),
       title: normalizeOptionalString(row.title),
+      summary: normalizeOptionalString(row.summary),
       createdAt: this.parseDate(row.createdAt, "chats.createdAt"),
       updatedAt: this.parseDate(row.updatedAt, "chats.updatedAt"),
       messageCount: toNumber(row.messageCount, "chats.messageCount"),
@@ -332,7 +371,7 @@ export class KyselyProvider<
     if (params.search) {
       const searchLower = params.search.toLowerCase();
       chats = chats.filter((chat) =>
-        chat.title?.toLowerCase().includes(searchLower)
+        chat.title?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -351,17 +390,20 @@ export class KyselyProvider<
       chatId: unknown;
       userId: unknown;
       title: unknown;
+      summary: unknown;
       createdAt: unknown;
       updatedAt: unknown;
       messageCount: unknown;
     }>`select ${sql.ref(columns.chatId)} as chatId, ${sql.ref(
-      columns.userId
+      columns.userId,
     )} as userId, ${sql.ref(columns.title)} as title, ${sql.ref(
-      columns.createdAt
+      columns.summary,
+    )} as summary, ${sql.ref(
+      columns.createdAt,
     )} as createdAt, ${sql.ref(columns.updatedAt)} as updatedAt, ${sql.ref(
-      columns.messageCount
+      columns.messageCount,
     )} as messageCount from ${sql.table(table)} where ${sql.ref(
-      columns.chatId
+      columns.chatId,
     )} = ${chatId}`.execute(this.db);
 
     const row = rows[0];
@@ -372,6 +414,7 @@ export class KyselyProvider<
       chatId: String(row.chatId),
       userId: normalizeOptionalString(row.userId),
       title: normalizeOptionalString(row.title),
+      summary: normalizeOptionalString(row.summary),
       createdAt: this.parseDate(row.createdAt, "chats.createdAt"),
       updatedAt: this.parseDate(row.updatedAt, "chats.updatedAt"),
       messageCount: toNumber(row.messageCount, "chats.messageCount"),
@@ -387,10 +430,16 @@ export class KyselyProvider<
     const { table, columns } = mapping;
     const now = this.now();
 
-    const updated = await rawUpdateById(this.db, table, columns.chatId, chatId, [
-      [columns.title, title],
-      [columns.updatedAt, now],
-    ]);
+    const updated = await rawUpdateById(
+      this.db,
+      table,
+      columns.chatId,
+      chatId,
+      [
+        [columns.title, title],
+        [columns.updatedAt, now],
+      ],
+    );
 
     if (updated) return;
 
@@ -403,6 +452,75 @@ export class KyselyProvider<
     });
   }
 
+  async updateChatSummary(chatId: string, summary: string): Promise<void> {
+    const mapping = this.config.chats;
+    if (!mapping) return;
+
+    assertNonBlank("chatId", chatId);
+
+    const { table, columns } = mapping;
+    const now = this.now();
+
+    const updated = await rawUpdateById(
+      this.db,
+      table,
+      columns.chatId,
+      chatId,
+      [
+        [columns.summary, summary],
+        [columns.updatedAt, now],
+      ],
+    );
+
+    if (updated) return;
+
+    await this.saveChat({
+      chatId,
+      summary,
+      createdAt: now,
+      updatedAt: now,
+      messageCount: 0,
+    });
+  }
+
+  async loadChatSummaries(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]> {
+    const mapping = this.config.chats;
+    if (!mapping) return [];
+
+    const { table, columns } = mapping;
+    const lim = params.limit ?? 10;
+
+    const { rows } = await sql<{
+      chatId: unknown;
+      title: unknown;
+      summary: unknown;
+      updatedAt: unknown;
+    }>`select ${sql.ref(columns.chatId)} as chatId, ${sql.ref(
+      columns.title,
+    )} as title, ${sql.ref(columns.summary)} as summary, ${sql.ref(
+      columns.updatedAt,
+    )} as updatedAt from ${sql.table(table)} where ${sql.ref(
+      columns.userId,
+    )} = ${params.userId} and ${sql.ref(
+      columns.chatId,
+    )} <> ${params.excludeChatId} and ${sql.ref(
+      columns.summary,
+    )} is not null order by ${sql.ref(
+      columns.updatedAt,
+    )} desc offset 0 rows fetch next ${lim} rows only`.execute(this.db);
+
+    return rows.map((row) => ({
+      chatId: String(row.chatId),
+      title: normalizeOptionalString(row.title),
+      summary: String(row.summary),
+      updatedAt: this.parseDate(row.updatedAt, "chats.updatedAt"),
+    }));
+  }
+
   async deleteChat(chatId: string): Promise<void> {
     const mapping = this.config.chats;
     assertNonBlank("chatId", chatId);
@@ -410,7 +528,12 @@ export class KyselyProvider<
     const messages = this.config.messages;
 
     await this.db.transaction().execute(async (trx) => {
-      await rawDeleteEquals(trx, messages.table, messages.columns.chatId, chatId);
+      await rawDeleteEquals(
+        trx,
+        messages.table,
+        messages.columns.chatId,
+        chatId,
+      );
 
       if (!mapping) return;
 
@@ -436,7 +559,7 @@ export class KyselyProvider<
 function getRequiredScopeId(
   scope: MemoryScope,
   chatId?: string,
-  userId?: string
+  userId?: string,
 ): string {
   if (scope === "chat") {
     assertNonBlank("chatId", chatId);
@@ -460,7 +583,7 @@ function isPositiveRowCount(value: unknown): boolean {
 
 function stringifyContent(
   value: unknown,
-  stringify: (value: unknown) => string
+  stringify: (value: unknown) => string,
 ): string {
   if (typeof value === "string") return value;
   return stringify(value);
@@ -468,7 +591,7 @@ function stringifyContent(
 
 function parseContentMaybeJson(
   value: unknown,
-  parse: (value: string) => unknown
+  parse: (value: string) => unknown,
 ): UIMessage {
   if (typeof value === "string") {
     try {
@@ -500,12 +623,12 @@ async function rawInsert(
   executor: { getExecutor: Kysely<unknown>["getExecutor"] },
   table: string,
   columns: readonly string[],
-  values: readonly unknown[]
+  values: readonly unknown[],
 ): Promise<void> {
   const colsSql = sql.join(columns.map((c) => sql.ref(c)));
   const valsSql = sql.join(values);
   await sql`insert into ${sql.table(table)} (${colsSql}) values (${valsSql})`.execute(
-    executor
+    executor,
   );
 }
 
@@ -513,10 +636,10 @@ async function rawDeleteEquals(
   executor: { getExecutor: Kysely<unknown>["getExecutor"] },
   table: string,
   column: string,
-  value: unknown
+  value: unknown,
 ): Promise<void> {
   await sql`delete from ${sql.table(table)} where ${sql.ref(column)} = ${value}`.execute(
-    executor
+    executor,
   );
 }
 
@@ -525,18 +648,19 @@ async function rawUpdateById(
   table: string,
   idColumn: string,
   idValue: unknown,
-  sets: ReadonlyArray<readonly [string, unknown]>
+  sets: ReadonlyArray<readonly [string, unknown]>,
 ): Promise<boolean> {
   if (sets.length === 0) return false;
 
   const setSql = sql.join(
     sets.map(([col, val]) => sql`${sql.ref(col)} = ${val}`),
-    sql`, `
+    sql`, `,
   );
 
-  const res = await sql`update ${sql.table(table)} set ${setSql} where ${sql.ref(
-    idColumn
-  )} = ${idValue}`.execute(executor);
+  const res =
+    await sql`update ${sql.table(table)} set ${setSql} where ${sql.ref(
+      idColumn,
+    )} = ${idValue}`.execute(executor);
 
   return isPositiveRowCount(res.numAffectedRows);
 }

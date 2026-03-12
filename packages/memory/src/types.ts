@@ -37,15 +37,34 @@ export interface ChatSession {
   chatId: string;
   userId?: string;
   title?: string;
+  summary?: string;
   createdAt: Date;
   updatedAt: Date;
   messageCount: number;
 }
 
 /**
+ * Lightweight chat summary for cross-session context injection
+ */
+export interface ChatSummary {
+  chatId: string;
+  title?: string;
+  summary: string;
+  updatedAt: Date;
+}
+
+/**
  * Configuration for automatic title generation
  */
 export interface GenerateTitleConfig {
+  model: any; // Use 'any' to avoid AI SDK dependency
+  instructions?: string;
+}
+
+/**
+ * Configuration for automatic summary generation
+ */
+export interface GenerateSummaryConfig {
   model: any; // Use 'any' to avoid AI SDK dependency
   instructions?: string;
 }
@@ -73,6 +92,7 @@ export interface GenerateSuggestionsConfig {
 export interface ChatsConfig {
   enabled: boolean;
   generateTitle?: boolean | GenerateTitleConfig;
+  generateSummary?: boolean | GenerateSummaryConfig;
   generateSuggestions?: boolean | GenerateSuggestionsConfig;
 }
 
@@ -129,6 +149,16 @@ export interface MemoryProvider {
 
   /** Update chat title (optional) */
   updateChatTitle?(chatId: string, title: string): Promise<void>;
+
+  /** Update chat summary (optional) */
+  updateChatSummary?(chatId: string, summary: string): Promise<void>;
+
+  /** Load summaries from other chats for cross-session context (optional) */
+  loadChatSummaries?(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]>;
 
   /** Delete a chat session and its messages (optional) */
   deleteChat?(chatId: string): Promise<void>;

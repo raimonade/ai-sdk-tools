@@ -288,6 +288,33 @@ workingMemory: {
 }
 ```
 
+## Disabling Memory Per User
+
+Memory is an app-level concern. To let users opt out, conditionally omit the `memory` config:
+
+```typescript
+const userPrefs = await getUserPreferences(userId);
+
+const agent = new Agent({
+  name: "Assistant",
+  model: openai("gpt-4"),
+  instructions: "You are a helpful assistant.",
+  // Only enable memory if user hasn't opted out
+  ...(userPrefs.memoryEnabled
+    ? {
+        memory: {
+          provider: memoryProvider,
+          workingMemory: { enabled: true, scope: "user" },
+          history: { enabled: true, limit: 10 },
+          chats: { enabled: true, generateTitle: true },
+        },
+      }
+    : {}),
+});
+```
+
+When `memory` is omitted, the agent functions normally but without persistence — no working memory, no history loading, no chat sessions.
+
 ## Custom Provider
 
 Implement the `MemoryProvider` interface:

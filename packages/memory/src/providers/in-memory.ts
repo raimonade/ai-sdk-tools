@@ -1,5 +1,6 @@
 import type {
   ChatSession,
+  ChatSummary,
   ConversationMessage,
   MemoryProvider,
   MemoryScope,
@@ -77,11 +78,13 @@ export class InMemoryProvider implements MemoryProvider {
 
   async saveChat(chat: ChatSession): Promise<void> {
     const existing = this.chats.get(chat.chatId);
-    // Preserve existing title if new chat doesn't have one
+    // Preserve existing title and summary if new chat doesn't have them
     const title = chat.title || existing?.title;
+    const summary = chat.summary || existing?.summary;
     this.chats.set(chat.chatId, {
       ...chat,
       title,
+      summary,
     });
   }
 
@@ -138,6 +141,47 @@ export class InMemoryProvider implements MemoryProvider {
         messageCount: 0,
       });
     }
+  }
+
+  async updateChatSummary(chatId: string, summary: string): Promise<void> {
+    const chat = this.chats.get(chatId);
+    if (chat) {
+      chat.summary = summary;
+      chat.updatedAt = new Date();
+      this.chats.set(chatId, chat);
+    } else {
+      const now = new Date();
+      this.chats.set(chatId, {
+        chatId,
+        summary,
+        createdAt: now,
+        updatedAt: now,
+        messageCount: 0,
+      });
+    }
+  }
+
+  async loadChatSummaries(params: {
+    userId: string;
+    excludeChatId: string;
+    limit?: number;
+  }): Promise<ChatSummary[]> {
+    const limit = params.limit ?? 10;
+    return Array.from(this.chats.values())
+      .filter(
+        (chat) =>
+          chat.userId === params.userId &&
+          chat.chatId !== params.excludeChatId &&
+          chat.summary != null,
+      )
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+      .slice(0, limit)
+      .map((chat) => ({
+        chatId: chat.chatId,
+        title: chat.title,
+        summary: chat.summary!,
+        updatedAt: chat.updatedAt,
+      }));
   }
 
   async deleteChat(chatId: string): Promise<void> {
