@@ -119,6 +119,19 @@ export class Agent<
     });
   }
 
+  /** Resolve tool titles for trace enrichment. */
+  public getToolTitles(context: TContext): Record<string, string | undefined> {
+    const tools =
+      typeof this.configuredTools === "function"
+        ? this.configuredTools(context)
+        : this.configuredTools;
+    const titles: Record<string, string | undefined> = {};
+    for (const [name, t] of Object.entries(tools)) {
+      titles[name] = (t as { title?: string }).title;
+    }
+    return titles;
+  }
+
   async generate(options: AgentGenerateOptions): Promise<AgentGenerateResult> {
     const startTime = new Date();
 
@@ -500,6 +513,8 @@ export class Agent<
 
         // Collect all agent events for persistent trace
         const traceSteps: AgentDataParts["agent-trace"]["steps"] = [];
+        // Tool title map — populated per-agent before streaming
+        let toolTitles: Record<string, string | undefined> = {};
         const originalOnEvent = onEvent;
         const onEventWithTrace = async (event: AgentEvent) => {
           const step: AgentDataParts["agent-trace"]["steps"][number] = {
@@ -517,6 +532,7 @@ export class Agent<
           if (event.type === "agent-step" && event.step.toolCalls?.length) {
             step.toolCalls = event.step.toolCalls.map((tc) => ({
               toolName: tc.toolName,
+              title: toolTitles[tc.toolName],
               args: "args" in tc ? tc.args : undefined,
             }));
           }
@@ -738,6 +754,11 @@ export class Agent<
             if (messagesToSend.length === 0 && messages.length > 0) {
               messagesToSend = messages.slice(-1); // Use the last user message
             }
+
+            // Populate tool titles for trace enrichment
+            toolTitles = currentAgent.getToolTitles(
+              executionContext as TContext,
+            );
 
             // Emit agent start event
             await onEventWithTrace({
@@ -1126,6 +1147,11 @@ export class Agent<
           }
 
           // Emit completion event
+          writeAgentStatus(writer, {
+            status: "completing",
+            agent: this.name,
+          });
+
           await onEventWithTrace({
             type: "agent-complete",
             totalRounds: round,

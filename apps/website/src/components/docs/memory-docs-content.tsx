@@ -16,7 +16,10 @@ function CodeBlock(props: {
         props.className ? ` ${props.className}` : ""
       }`}
     >
-      <pre className="text-xs font-mono leading-relaxed" suppressHydrationWarning>
+      <pre
+        className="text-xs font-mono leading-relaxed"
+        suppressHydrationWarning
+      >
         <code
           // biome-ignore lint/security/noDangerouslySetInnerHtml: highlight() returns HTML
           dangerouslySetInnerHTML={{ __html: highlight(props.code) }}
@@ -436,6 +439,40 @@ export async function POST(req: Request) {
   enabled: true,
   scope: 'user',
 }`}
+            />
+          </div>
+        </section>
+
+        {/* Disabling Memory Per User */}
+        <section className="mb-40">
+          <div className="max-w-4xl">
+            <h2 className="text-2xl font-normal mb-8">
+              Disabling Memory Per User
+            </h2>
+            <p className="text-sm text-secondary mb-6 leading-relaxed">
+              Memory is an app-level concern. To let users opt out,
+              conditionally omit the{" "}
+              <code className="text-[#d4d4d4]">memory</code> config. When
+              omitted, the agent functions normally but without persistence.
+            </p>
+            <CodeBlock
+              className="mb-8"
+              code={`const userPrefs = await getUserPreferences(userId)
+
+const agent = new Agent({
+  name: 'Assistant',
+  model: openai('gpt-4'),
+  instructions: 'You are a helpful assistant.',
+  // Only enable memory if user hasn't opted out
+  ...(userPrefs.memoryEnabled ? {
+    memory: {
+      provider: memoryProvider,
+      workingMemory: { enabled: true, scope: 'user' },
+      history: { enabled: true, limit: 10 },
+      chats: { enabled: true, generateTitle: true },
+    }
+  } : {}),
+})`}
             />
           </div>
         </section>

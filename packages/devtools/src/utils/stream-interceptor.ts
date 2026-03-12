@@ -64,25 +64,25 @@ export class StreamInterceptor {
                 return;
               }
 
-              // CRITICAL: Pass the original chunk through FIRST
-              // This ensures the original stream is never blocked
+              // Pass the original chunk through immediately
               controller.enqueue(value);
 
               try {
                 const chunk = decoder.decode(value, { stream: true });
                 this.parseSSEChunk(chunk);
               } catch (parseError) {
-                // Log parsing errors but don't break the stream
+                // Parsing errors don't break the stream
               }
 
-              return pump();
+              await pump();
             } catch (error) {
-              // Forward stream errors to the original consumer
               controller.error(error);
             }
           };
 
-          return pump();
+          // Fire-and-forget: don't return the Promise so start() resolves immediately.
+          // Returning it would delay the stream until the entire response is consumed.
+          pump().catch((err) => controller.error(err));
         },
       });
 
@@ -157,7 +157,12 @@ export class StreamInterceptor {
       input: RequestInfo | URL,
       init?: RequestInit,
     ): Promise<Response> => {
-      const url = typeof input === "string" ? input : input.toString();
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof Request
+            ? input.url
+            : input.toString();
 
       // Safety: Skip interception if we've had errors
       if (this.hasErrors) {

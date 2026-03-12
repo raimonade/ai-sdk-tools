@@ -116,7 +116,7 @@
     },
     "packages/agents": {
       "name": "@raimonade/ai-sdk-tools-agents",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@raimonade/ai-sdk-tools-debug": "workspace:*",
         "@raimonade/ai-sdk-tools-memory": "workspace:*",
@@ -133,7 +133,7 @@
     },
     "packages/ai-sdk-tools": {
       "name": "@raimonade/ai-sdk-tools",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@raimonade/ai-sdk-tools-agents": "workspace:*",
         "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
@@ -164,7 +164,7 @@
     },
     "packages/artifacts": {
       "name": "@raimonade/ai-sdk-tools-artifacts",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "zod": "^4.2.1",
       },
@@ -183,7 +183,7 @@
     },
     "packages/cache": {
       "name": "@raimonade/ai-sdk-tools-cache",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@raimonade/ai-sdk-tools-artifacts": "workspace:*",
         "@types/node": "^25.0.3",
@@ -199,7 +199,7 @@
     },
     "packages/debug": {
       "name": "@raimonade/ai-sdk-tools-debug",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@types/node": "^25.0.3",
         "tsup": "^8.5.1",
@@ -208,7 +208,7 @@
     },
     "packages/devtools": {
       "name": "@raimonade/ai-sdk-tools-devtools",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
@@ -242,7 +242,7 @@
     },
     "packages/memory": {
       "name": "@raimonade/ai-sdk-tools-memory",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "zod": "^4.2.1",
       },
@@ -274,7 +274,7 @@
     },
     "packages/ocr": {
       "name": "@raimonade/ai-sdk-tools-ocr",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@types/node": "^24.10.1",
         "ai": "^6.0.3",
@@ -292,7 +292,7 @@
     },
     "packages/store": {
       "name": "@raimonade/ai-sdk-tools-store",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "@types/node": "^25.0.3",
         "ai": "^6.0.3",

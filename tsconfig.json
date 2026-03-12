@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "noEmit": true
+  },
+  "references": [
+    { "path": "packages/ai-sdk-tools" },
+    { "path": "packages/agents" },
+    { "path": "packages/artifacts" },
+    { "path": "packages/cache" },
+    { "path": "packages/debug" },
+    { "path": "packages/devtools" },
+    { "path": "packages/memory" },
+    { "path": "packages/ocr" },
+    { "path": "packages/store" },
+    { "path": "apps/example" },
+    { "path": "apps/website" }
+  ],
+  "include": [],
+  "exclude": ["node_modules", "dist"]
+}

@@ -75,6 +75,7 @@ export interface Agent<
   generate(options: AgentGenerateOptions): Promise<AgentGenerateResult>;
   stream(options: AgentStreamOptions): Promise<AgentStreamResult>;
   getHandoffs(): Array<Agent<any>>;
+  getToolTitles(context: TContext): Record<string, string | undefined>;
 }
 
 export interface AgentConfig<
@@ -379,7 +380,7 @@ export interface AgentDataParts {
       reason?: string;
       round?: number;
       totalRounds?: number;
-      toolCalls?: Array<{ toolName: string; args: unknown }>;
+      toolCalls?: Array<{ toolName: string; title?: string; args: unknown }>;
       timestamp: number;
     }>;
   };
