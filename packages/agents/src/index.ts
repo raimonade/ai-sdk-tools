@@ -37,6 +37,7 @@ export { AgentRunContext } from "./run-context.js";
 // Streaming utilities
 export {
   writeAgentStatus,
+  writeAgentTrace,
   writeDataPart,
   writeRateLimit,
 } from "./streaming.js";

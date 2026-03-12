@@ -369,6 +369,20 @@ export interface AgentDataParts {
   suggestions: {
     prompts: string[];
   };
+  /** Full agent execution trace (non-transient — persisted in message history) */
+  "agent-trace": {
+    steps: Array<{
+      type: AgentEvent["type"];
+      agent?: string;
+      from?: string;
+      to?: string;
+      reason?: string;
+      round?: number;
+      totalRounds?: number;
+      toolCalls?: Array<{ toolName: string; args: unknown }>;
+      timestamp: number;
+    }>;
+  };
   // Allow extension with custom data parts
   [key: string]: unknown;
 }

@@ -1,6 +1,7 @@
 import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 import {
   DEFAULT_TEMPLATE,
+  formatChatSummaries,
   formatWorkingMemory,
   getWorkingMemoryInstructions,
   type MemoryConfig,
@@ -31,10 +32,15 @@ import {
 } from "./handoff.js";
 import { promptWithHandoffInstructions } from "./handoff-prompt.js";
 import { AgentRunContext } from "./run-context.js";
-import { writeAgentStatus, writeSuggestions } from "./streaming.js";
+import {
+  writeAgentStatus,
+  writeAgentTrace,
+  writeSuggestions,
+} from "./streaming.js";
 import { createDefaultInputFilter } from "./tool-result-extractor.js";
 import type {
   AgentConfig,
+  AgentDataParts,
   AgentEvent,
   AgentGenerateOptions,
   AgentGenerateResult,
@@ -409,6 +415,15 @@ export class Agent<
               JSON.stringify(assistantMsg),
               existingChatForSave,
             );
+
+            // Fire-and-forget summary generation after save completes
+            this.maybeGenerateChatSummary(
+              context as TContext,
+              event.messages,
+              existingChatForSave,
+            ).catch((err: unknown) =>
+              logger.error("Summary generation error", { error: err }),
+            );
           } catch (err) {
             logger.error("Failed to save conversation", { error: err });
           }
@@ -425,13 +440,17 @@ export class Agent<
       onError,
       generateId,
       execute: async ({ writer }) => {
-        // Load history and working memory in parallel for better performance
-        const [messages, memoryAddition] = await Promise.all([
-          this.loadMessagesWithHistory(message, context as TContext),
-          context && this.memory?.workingMemory?.enabled
-            ? this.loadWorkingMemory(context as TContext)
-            : Promise.resolve(""),
-        ]);
+        // Load history, working memory, and chat summaries in parallel
+        const [messages, memoryAddition, chatSummariesAddition] =
+          await Promise.all([
+            this.loadMessagesWithHistory(message, context as TContext),
+            context && this.memory?.workingMemory?.enabled
+              ? this.loadWorkingMemory(context as TContext)
+              : Promise.resolve(""),
+            context && this.memory?.chats?.enabled
+              ? this.loadChatSummaries(context as TContext)
+              : Promise.resolve(""),
+          ]);
 
         // Load chat metadata once for the entire request (stored in closure for wrappedOnFinish)
         const { chatId } = this.extractMemoryIdentifiers(context as TContext);
@@ -472,11 +491,42 @@ export class Agent<
         (executionContext as any).runContext = runContext;
 
         // Store memory addition for system prompt injection
-        if (memoryAddition) {
+        if (memoryAddition || chatSummariesAddition) {
           const extendedExecContext =
             executionContext as ExtendedExecutionContext;
-          extendedExecContext._memoryAddition = memoryAddition;
+          extendedExecContext._memoryAddition =
+            memoryAddition + chatSummariesAddition;
         }
+
+        // Collect all agent events for persistent trace
+        const traceSteps: AgentDataParts["agent-trace"]["steps"] = [];
+        const originalOnEvent = onEvent;
+        const onEventWithTrace = async (event: AgentEvent) => {
+          const step: AgentDataParts["agent-trace"]["steps"][number] = {
+            type: event.type,
+            timestamp: Date.now(),
+          };
+
+          if ("agent" in event) step.agent = event.agent;
+          if ("from" in event) step.from = event.from;
+          if ("to" in event) step.to = event.to;
+          if ("reason" in event) step.reason = event.reason;
+          if ("round" in event) step.round = event.round;
+          if ("totalRounds" in event) step.totalRounds = event.totalRounds;
+
+          if (event.type === "agent-step" && event.step.toolCalls?.length) {
+            step.toolCalls = event.step.toolCalls.map((tc) => ({
+              toolName: tc.toolName,
+              args: "args" in tc ? tc.args : undefined,
+            }));
+          }
+
+          traceSteps.push(step);
+
+          if (originalOnEvent) {
+            await originalOnEvent(event);
+          }
+        };
 
         try {
           // Execute beforeStream hook - allows for rate limiting, auth, etc.
@@ -501,13 +551,11 @@ export class Agent<
             agent: this.name,
           });
 
-          if (onEvent) {
-            await onEvent({
-              type: "agent-start",
-              agent: this.name,
-              round: 0,
-            });
-          }
+          await onEventWithTrace({
+            type: "agent-start",
+            agent: this.name,
+            round: 0,
+          });
 
           // Determine starting agent using programmatic routing
           let currentAgent: IAgent<any> = this;
@@ -529,13 +577,11 @@ export class Agent<
                 agent: this.name,
               });
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-finish",
-                  agent: this.name,
-                  round: 0,
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-finish",
+                agent: this.name,
+                round: 0,
+              });
 
               // Emit handoff event for explicit choice
               writer.write({
@@ -549,14 +595,12 @@ export class Agent<
                 transient: true,
               } as never);
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-handoff",
-                  from: this.name,
-                  to: chosenAgent.name,
-                  reason: "User selected agent",
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-handoff",
+                from: this.name,
+                to: chosenAgent.name,
+                reason: "User selected agent",
+              });
             }
           } else if (toolChoice && specialists.length > 0) {
             // Find agent that has the requested tool
@@ -581,13 +625,11 @@ export class Agent<
                 agent: this.name,
               });
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-finish",
-                  agent: this.name,
-                  round: 0,
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-finish",
+                agent: this.name,
+                round: 0,
+              });
 
               // Emit handoff event for tool choice
               writer.write({
@@ -602,14 +644,12 @@ export class Agent<
                 transient: true,
               } as never);
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-handoff",
-                  from: this.name,
-                  to: agentWithTool.name,
-                  reason: `User requested tool: ${toolChoice}`,
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-handoff",
+                from: this.name,
+                to: agentWithTool.name,
+                reason: `User requested tool: ${toolChoice}`,
+              });
             }
           } else if (strategy === "auto" && specialists.length > 0) {
             // Try programmatic classification
@@ -644,13 +684,11 @@ export class Agent<
                 agent: this.name,
               });
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-finish",
-                  agent: this.name,
-                  round: 0,
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-finish",
+                agent: this.name,
+                round: 0,
+              });
 
               // Emit handoff event for programmatic routing
               writer.write({
@@ -664,14 +702,12 @@ export class Agent<
                 transient: true,
               } as never);
 
-              if (onEvent) {
-                await onEvent({
-                  type: "agent-handoff",
-                  from: this.name,
-                  to: matchedAgent.name,
-                  reason: "Programmatic routing match",
-                });
-              }
+              await onEventWithTrace({
+                type: "agent-handoff",
+                from: this.name,
+                to: matchedAgent.name,
+                reason: "Programmatic routing match",
+              });
             }
           }
 
@@ -704,13 +740,11 @@ export class Agent<
             }
 
             // Emit agent start event
-            if (onEvent) {
-              await onEvent({
-                type: "agent-start",
-                agent: currentAgent.name,
-                round,
-              });
-            }
+            await onEventWithTrace({
+              type: "agent-start",
+              agent: currentAgent.name,
+              round,
+            });
 
             // Type assertion needed: executionContext and onStepFinish types don't strictly match
             // Note: toolChoice is NOT passed here - it was only used for routing
@@ -721,13 +755,11 @@ export class Agent<
               executionContext: executionContext,
               maxSteps, // Limit tool calls per round
               onStepFinish: async (step: unknown) => {
-                if (onEvent) {
-                  await onEvent({
-                    type: "agent-step",
-                    agent: currentAgent.name,
-                    step: step as StepResult<Record<string, Tool>>,
-                  });
-                }
+                await onEventWithTrace({
+                  type: "agent-step",
+                  agent: currentAgent.name,
+                  step: step as StepResult<Record<string, Tool>>,
+                });
               },
             } as any);
 
@@ -866,13 +898,11 @@ export class Agent<
             }
 
             // Emit agent finish event
-            if (onEvent) {
-              await onEvent({
-                type: "agent-finish",
-                agent: currentAgent.name,
-                round,
-              });
-            }
+            await onEventWithTrace({
+              type: "agent-finish",
+              agent: currentAgent.name,
+              round,
+            });
 
             // Handle orchestration flow
             if (currentAgent === this) {
@@ -995,14 +1025,12 @@ export class Agent<
                   } as never);
 
                   // Emit handoff event
-                  if (onEvent) {
-                    await onEvent({
-                      type: "agent-handoff",
-                      from: this.name,
-                      to: nextAgent.name,
-                      reason: handoffData.reason,
-                    });
-                  }
+                  await onEventWithTrace({
+                    type: "agent-handoff",
+                    from: this.name,
+                    to: nextAgent.name,
+                    reason: handoffData.reason,
+                  });
                 }
               } else {
                 // Orchestrator done, no more handoffs
@@ -1083,14 +1111,12 @@ export class Agent<
                   } as never);
 
                   // Emit handoff event
-                  if (onEvent) {
-                    await onEvent({
-                      type: "agent-handoff",
-                      from: previousAgent.name,
-                      to: nextAgent.name,
-                      reason: handoffData.reason,
-                    });
-                  }
+                  await onEventWithTrace({
+                    type: "agent-handoff",
+                    from: previousAgent.name,
+                    to: nextAgent.name,
+                    reason: handoffData.reason,
+                  });
                 }
               } else {
                 // No handoff - specialist is done, complete the task
@@ -1100,12 +1126,10 @@ export class Agent<
           }
 
           // Emit completion event
-          if (onEvent) {
-            await onEvent({
-              type: "agent-complete",
-              totalRounds: round,
-            });
-          }
+          await onEventWithTrace({
+            type: "agent-complete",
+            totalRounds: round,
+          });
 
           // Generate suggestions after orchestration completes
           const config = this.memory?.chats?.generateSuggestions;
@@ -1153,23 +1177,31 @@ export class Agent<
             );
           }
 
+          // Persist full agent trace in message history
+          if (traceSteps.length > 0) {
+            writeAgentTrace(writer, { steps: traceSteps });
+          }
+
           writer.write({ type: "finish" });
         } catch (error) {
           logger.error("Error in toUIMessageStream", { error });
 
           // Emit error event
-          if (onEvent) {
-            await onEvent({
-              type: "agent-error",
-              error: error instanceof Error ? error : new Error(String(error)),
-            });
-          }
+          await onEventWithTrace({
+            type: "agent-error",
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
 
           // Type assertions needed: custom error and finish message formats
           writer.write({
             type: "error",
             error: error instanceof Error ? error.message : String(error),
           } as any);
+
+          if (traceSteps.length > 0) {
+            writeAgentTrace(writer, { steps: traceSteps });
+          }
+
           writer.write({ type: "finish" } as any);
         }
       },
@@ -1622,6 +1654,122 @@ Good suggestions are:
         error,
       });
       throw error; // Re-throw to make save failures visible
+    }
+  }
+
+  /**
+   * Load chat summaries from other sessions for cross-session context.
+   * Returns formatted string for system prompt injection.
+   */
+  private async loadChatSummaries(context: TContext): Promise<string> {
+    if (!this.memory?.chats?.enabled || !this.memory?.provider) {
+      return "";
+    }
+
+    const { chatId, userId } = this.extractMemoryIdentifiers(context);
+    if (!chatId || !userId) return "";
+
+    try {
+      const summaries = await this.memory.provider.loadChatSummaries?.({
+        userId,
+        excludeChatId: chatId,
+        limit: 10,
+      });
+
+      if (!summaries || summaries.length === 0) return "";
+
+      return formatChatSummaries(summaries);
+    } catch (error) {
+      logger.error("Failed to load chat summaries", {
+        error: error instanceof Error ? error.message : error,
+      });
+      return "";
+    }
+  }
+
+  /**
+   * Conditionally trigger summary generation based on message count.
+   * Re-summarizes every 6 messages (initial threshold = 6).
+   * Fire-and-forget — does not block the response.
+   */
+  private async maybeGenerateChatSummary(
+    context: TContext | undefined,
+    messages: UIMessage[],
+    existingChat?: { messageCount?: number; summary?: string },
+  ): Promise<void> {
+    if (
+      !this.memory?.chats?.enabled ||
+      !this.memory?.chats?.generateSummary ||
+      !context
+    ) {
+      return;
+    }
+
+    const { chatId } = this.extractMemoryIdentifiers(context);
+    if (!chatId) return;
+
+    // messageCount from existingChat is pre-save count; saveConversation already added 2
+    const newMessageCount = (existingChat?.messageCount ?? 0) + 2;
+
+    // Only generate at every 6th message (6, 12, 18, ...)
+    if (newMessageCount < 6 || newMessageCount % 6 !== 0) return;
+
+    this.generateChatSummary(chatId, messages, existingChat?.summary).catch(
+      (err: unknown) =>
+        logger.error("Summary generation failed", { error: err }),
+    );
+  }
+
+  /**
+   * Generate (or incrementally update) a chat summary using an LLM.
+   */
+  private async generateChatSummary(
+    chatId: string,
+    messages: UIMessage[],
+    existingSummary?: string,
+  ): Promise<void> {
+    if (!this.memory?.chats?.generateSummary) return;
+
+    const config = this.memory.chats.generateSummary;
+    const model = typeof config === "object" ? config.model : this.model;
+    const customInstructions =
+      typeof config === "object" ? config.instructions : undefined;
+
+    const defaultInstructions = `You summarize conversations into 2-3 concise sentences that capture the key topics, decisions, and outcomes. Focus on facts that would be useful context in future conversations. Do not include greetings or pleasantries.`;
+
+    const systemPrompt = customInstructions ?? defaultInstructions;
+
+    // Build prompt with existing summary for incremental updates
+    const recentMessages = messages.slice(-12);
+    const formattedMessages = recentMessages
+      .map(
+        (m: any) =>
+          `${m.role}: ${typeof m.content === "string" ? m.content : JSON.stringify(m.content)}`,
+      )
+      .join("\n");
+
+    let prompt: string;
+    if (existingSummary) {
+      prompt = `Previous summary:\n${existingSummary}\n\nRecent messages:\n${formattedMessages}\n\nUpdate the summary to incorporate the new messages. Return only the updated summary (2-3 sentences).`;
+    } else {
+      prompt = `Messages:\n${formattedMessages}\n\nSummarize this conversation. Return only the summary (2-3 sentences).`;
+    }
+
+    try {
+      const { text } = await generateText({
+        model,
+        system: systemPrompt,
+        prompt,
+        temperature: 0,
+      });
+
+      await this.memory.provider?.updateChatSummary?.(chatId, text);
+      logger.debug(`Generated summary for ${chatId}`, {
+        chatId,
+        summaryLength: text.length,
+      });
+    } catch (err) {
+      logger.error("Summary generation LLM call failed", { error: err });
     }
   }
 

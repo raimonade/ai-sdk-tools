@@ -47,14 +47,14 @@
 /* Ensure devtools always appear on top */
 .ai-devtools-panel,
 .ai-devtools-button {
-  z-index: 999999 !important;
   position: fixed !important;
 }
 
-/* Button styles */
+/* Button styles — z-index above panel so it's always reachable */
 .ai-devtools-button {
-  bottom: 1rem !important;
-  right: 1rem !important;
+  z-index: 2147483647 !important;
+  bottom: 1rem;
+  right: 1rem;
   width: 3rem !important;
   height: 3rem !important;
   background-color: #000000 !important; /* Pure black background */
@@ -90,7 +90,7 @@
   line-height: 1rem !important;
   overflow: visible !important;
   position: fixed !important;
-  z-index: 2147483647 !important;
+  z-index: 2147483646 !important;
   display: flex !important;
   flex-direction: column !important;
 }
