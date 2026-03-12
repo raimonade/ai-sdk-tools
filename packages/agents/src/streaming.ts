@@ -114,3 +114,14 @@ export function writeSuggestions(
 ): void {
   writeDataPart(writer, "data-suggestions", { prompts }, { transient: true });
 }
+
+/**
+ * Write the full agent execution trace as a non-transient data part.
+ * Persists in message history for historical step inspection.
+ */
+export function writeAgentTrace(
+  writer: UIMessageStreamWriter,
+  trace: AgentDataParts["agent-trace"],
+): void {
+  writeDataPart(writer, "data-agent-trace", trace);
+}
