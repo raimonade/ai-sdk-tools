@@ -1,5 +1,11 @@
 ## 0.9.3
 
+## 2.1.3
+
+### Patch Changes
+
+- 05a030e: fix(agents): await saveChat before saveMessage to prevent FK constraint race on new chats
+
 ## 2.0.1
 
 ### Patch Changes
