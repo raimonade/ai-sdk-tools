@@ -12,7 +12,6 @@ import {
 } from "@xyflow/react";
 import dagre from "dagre";
 import { useCallback, useEffect, useMemo } from "react";
-import "@xyflow/react/dist/style.css";
 import type { AgentFlowData, AIEvent } from "../types";
 import { AgentNode } from "./agent-node";
 import { ToolNode } from "./tool-node";

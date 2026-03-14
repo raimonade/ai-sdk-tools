@@ -1,6 +1,9 @@
+import { createRequire } from "node:module";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "tsup";
+
+const require = createRequire(import.meta.url);
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -33,9 +36,12 @@ export default defineConfig({
 (function() {
   if (typeof document === 'undefined') return;
   if (document.getElementById('ai-devtools-styles')) return;
-  
-  const CSS_CONTENT = \`${readFileSync(resolve(__dirname, "src/styles.css"), "utf-8").replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`;
-  
+
+  const CSS_CONTENT = \`${[
+    readFileSync(require.resolve("@xyflow/react/dist/style.css"), "utf-8"),
+    readFileSync(resolve(__dirname, "src/styles.css"), "utf-8"),
+  ].join("\\n").replace(/\`/g, "\\\`").replace(/\$/g, "\\$")}\`;
+
   const style = document.createElement('style');
   style.id = 'ai-devtools-styles';
   style.textContent = CSS_CONTENT;
