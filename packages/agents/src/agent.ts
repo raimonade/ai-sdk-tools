@@ -421,11 +421,15 @@ export class Agent<
             }
 
             logger.debug(`Saving messages (files excluded from storage)`);
+            const serializedAssistant = JSON.stringify(assistantMsg);
+            const savedMessageCount =
+              1 + (serializedAssistant.length > 0 ? 1 : 0);
+
             await this.saveConversation(
               chatId,
               userId,
               JSON.stringify(userMsgToSave),
-              JSON.stringify(assistantMsg),
+              serializedAssistant,
               existingChatForSave,
             );
 
@@ -434,6 +438,7 @@ export class Agent<
               context as TContext,
               event.messages,
               existingChatForSave,
+              savedMessageCount,
             ).catch((err: unknown) =>
               logger.error("Summary generation error", { error: err }),
             );
@@ -1601,8 +1606,7 @@ Good suggestions are:
   }
 
   /**
-   * Save user and assistant messages, then update chat session.
-   * Messages are saved in parallel for better performance.
+   * Save chat session (FK prerequisite) then user and assistant messages in parallel.
    *
    * @param chatId - The chat identifier
    * @param userId - Optional user identifier
@@ -1625,61 +1629,64 @@ Good suggestions are:
       assistantLength: assistantMessage.length,
     });
 
-    // Save messages and update chat session in parallel for better performance
+    // Ensure chat row exists before inserting messages (FK constraint, if provider supports saveChat)
     try {
-      const savePromises = [
-        this.memory.provider.saveMessage?.({
-          chatId,
-          userId,
-          role: "user",
-          content: userMessage,
-          timestamp: new Date(),
-        }),
-      ];
+      if (this.memory?.chats?.enabled) {
+        const messageCount =
+          1 + (assistantMessage && assistantMessage.length > 0 ? 1 : 0);
 
-      // Only save assistant message if it has content
-      if (assistantMessage && assistantMessage.length > 0) {
-        logger.debug(`Will save assistant message`, {
-          length: assistantMessage.length,
+        await this.memory.provider.saveChat?.({
+          ...(existingChat || { chatId, userId, createdAt: new Date() }),
+          messageCount: (existingChat?.messageCount || 0) + messageCount,
+          updatedAt: new Date(),
         });
+      }
+
+      const savePromises: Promise<void>[] = [];
+
+      if (this.memory.provider.saveMessage) {
         savePromises.push(
-          this.memory.provider.saveMessage?.({
+          this.memory.provider.saveMessage({
             chatId,
             userId,
-            role: "assistant",
-            content: assistantMessage,
+            role: "user",
+            content: userMessage,
             timestamp: new Date(),
           }),
         );
-      } else {
-        logger.warn(`Skipping assistant message save - empty or undefined`);
-      }
 
-      // Batch chat session update with message saves (using passed existingChat to avoid duplicate query)
-      if (this.memory?.chats?.enabled) {
-        const messageCount = savePromises.length;
-
-        savePromises.push(
-          this.memory.provider.saveChat?.({
-            ...(existingChat || { chatId, userId, createdAt: new Date() }),
-            messageCount: (existingChat?.messageCount || 0) + messageCount,
-            updatedAt: new Date(),
-          }),
-        );
+        if (assistantMessage && assistantMessage.length > 0) {
+          logger.debug(`Will save assistant message`, {
+            length: assistantMessage.length,
+          });
+          savePromises.push(
+            this.memory.provider.saveMessage({
+              chatId,
+              userId,
+              role: "assistant",
+              content: assistantMessage,
+              timestamp: new Date(),
+            }),
+          );
+        } else {
+          logger.warn(`Skipping assistant message save - empty or undefined`);
+        }
       }
 
       await Promise.all(savePromises);
 
-      logger.debug(`Successfully saved ${savePromises.length} items`, {
+      const totalSaved =
+        savePromises.length + (this.memory?.chats?.enabled ? 1 : 0);
+      logger.debug(`Successfully saved ${totalSaved} items`, {
         chatId,
-        count: savePromises.length,
+        count: totalSaved,
       });
     } catch (error) {
       logger.error(`Failed to save messages for chatId=${chatId}`, {
         chatId,
         error,
       });
-      throw error; // Re-throw to make save failures visible
+      throw error;
     }
   }
 
@@ -1722,6 +1729,7 @@ Good suggestions are:
     context: TContext | undefined,
     messages: UIMessage[],
     existingChat?: { messageCount?: number; summary?: string },
+    savedMessageCount: number = 2,
   ): Promise<void> {
     if (
       !this.memory?.chats?.enabled ||
@@ -1734,8 +1742,9 @@ Good suggestions are:
     const { chatId } = this.extractMemoryIdentifiers(context);
     if (!chatId) return;
 
-    // messageCount from existingChat is pre-save count; saveConversation already added 2
-    const newMessageCount = (existingChat?.messageCount ?? 0) + 2;
+    // messageCount from existingChat is pre-save; add the actual saved count
+    const newMessageCount =
+      (existingChat?.messageCount ?? 0) + savedMessageCount;
 
     // Only generate at every 6th message (6, 12, 18, ...)
     if (newMessageCount < 6 || newMessageCount % 6 !== 0) return;
