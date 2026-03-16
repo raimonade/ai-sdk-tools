@@ -8,9 +8,7 @@ const require = createRequire(import.meta.url);
 export default defineConfig({
   entry: ["src/index.ts"],
   format: ["cjs", "esm"],
-  dts: {
-    resolve: true,
-  },
+  dts: true,
   sourcemap: true,
   clean: true,
   splitting: false,
