@@ -1,5 +1,7 @@
 # @raimonade/artifacts
 
+## 3.0.0
+
 ## 2.1.6
 
 ## 2.1.5

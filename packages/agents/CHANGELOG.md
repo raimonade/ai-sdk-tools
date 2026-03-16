@@ -1,5 +1,11 @@
 ## 0.9.3
 
+## 3.0.0
+
+### Minor Changes
+
+- 82c6700: Add `reserveFinalTurn` option to AgentConfig. When enabled, if a specialist agent exhausts its turns without producing synthesis text, one additional text-only call is made to generate a summary.
+
 ## 2.1.6
 
 ## 2.1.5

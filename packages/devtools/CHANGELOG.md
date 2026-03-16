@@ -1,5 +1,11 @@
 # @raimonade/devtools
 
+## 3.0.0
+
+### Patch Changes
+
+- @raimonade/ai-sdk-tools-store@3.0.0
+
 ## 2.1.6
 
 ### Patch Changes
