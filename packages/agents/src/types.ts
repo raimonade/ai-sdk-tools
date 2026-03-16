@@ -72,6 +72,7 @@ export interface Agent<
   outputGuardrails?: OutputGuardrail[];
   permissions?: ToolPermissions;
   lastMessages?: number;
+  reserveFinalTurn?: boolean;
   generate(options: AgentGenerateOptions): Promise<AgentGenerateResult>;
   stream(options: AgentStreamOptions): Promise<AgentStreamResult>;
   getHandoffs(): Array<Agent<any>>;
@@ -98,6 +99,12 @@ export interface AgentConfig<
   handoffDescription?: string;
   /** Maximum number of turns before stopping */
   maxTurns?: number;
+  /**
+   * When true, if the agent exhausts its turns without producing text synthesis,
+   * one additional text-only call (no tools) is made to generate a summary.
+   * Prevents the "tool calls but no analysis" failure mode.
+   */
+  reserveFinalTurn?: boolean;
   /** Temperature for model responses */
   temperature?: number;
   /** Additional model settings */

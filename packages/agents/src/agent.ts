@@ -75,6 +75,7 @@ export class Agent<
   public readonly outputGuardrails?: OutputGuardrail[];
   public readonly permissions?: ToolPermissions;
   public readonly lastMessages?: number;
+  public readonly reserveFinalTurn: boolean;
   private readonly memory?: MemoryConfig;
   private readonly model: LanguageModel;
   private readonly aiAgent: AISDKAgent<never, Record<string, Tool>>;
@@ -96,6 +97,7 @@ export class Agent<
     this.outputGuardrails = config.outputGuardrails;
     this.permissions = config.permissions;
     this.lastMessages = config.lastMessages;
+    this.reserveFinalTurn = config.reserveFinalTurn ?? false;
     this.memory = config.memory;
     this.model = config.model;
     this.handoffAgents = config.handoffs || [];
@@ -207,6 +209,9 @@ export class Agent<
     const toolChoice = (options as Record<string, unknown>).toolChoice as
       | string
       | undefined;
+    const textOnly = (options as Record<string, unknown>).textOnly as
+      | boolean
+      | undefined;
 
     // Resolve instructions dynamically (static string or function)
     const resolvedInstructions =
@@ -255,27 +260,44 @@ export class Agent<
       systemPrompt = basePrompt + memoryAddition;
     }
 
-    // Resolve tools dynamically (static object or function)
-    const resolvedTools =
-      typeof this.configuredTools === "function"
-        ? this.configuredTools(executionContext as TContext)
-        : { ...this.configuredTools };
-
-    // Add handoff tool if needed
-    if (this.handoffAgents.length > 0) {
-      resolvedTools[HANDOFF_TOOL_NAME] = createHandoffTool(this.handoffAgents);
-      // Note: Agents communicate via conversationMessages during handoffs
+    // textOnly mode: strip all tools and append synthesis instruction
+    if (textOnly) {
+      systemPrompt +=
+        "\n\n<synthesis>\nYour tools have already been called and results are in the conversation. " +
+        "Analyze the results and provide a clear summary with key findings, comparisons, and insights. " +
+        "Do not attempt to call any tools — synthesize what you have.\n</synthesis>";
     }
 
-    // Add working memory update tool if enabled
-    // Give to all agents that can do work (have tools beyond just handoff)
-    const hasOtherTools = Object.keys(resolvedTools).some(
-      (key) => key !== HANDOFF_TOOL_NAME,
-    );
-    const isPureOrchestrator = this.handoffAgents.length > 0 && !hasOtherTools;
+    // Resolve tools dynamically (static object or function)
+    let resolvedTools: Record<string, Tool>;
+    if (textOnly) {
+      // No tools in text-only mode — forces the model to generate text
+      resolvedTools = {};
+    } else {
+      resolvedTools =
+        typeof this.configuredTools === "function"
+          ? this.configuredTools(executionContext as TContext)
+          : { ...this.configuredTools };
 
-    if (this.memory?.workingMemory?.enabled && !isPureOrchestrator) {
-      resolvedTools.updateWorkingMemory = this.createWorkingMemoryTool();
+      // Add handoff tool if needed
+      if (this.handoffAgents.length > 0) {
+        resolvedTools[HANDOFF_TOOL_NAME] = createHandoffTool(
+          this.handoffAgents,
+        );
+        // Note: Agents communicate via conversationMessages during handoffs
+      }
+
+      // Add working memory update tool if enabled
+      // Give to all agents that can do work (have tools beyond just handoff)
+      const hasOtherTools = Object.keys(resolvedTools).some(
+        (key) => key !== HANDOFF_TOOL_NAME,
+      );
+      const isPureOrchestrator =
+        this.handoffAgents.length > 0 && !hasOtherTools;
+
+      if (this.memory?.workingMemory?.enabled && !isPureOrchestrator) {
+        resolvedTools.updateWorkingMemory = this.createWorkingMemoryTool();
+      }
     }
 
     // Note: Conversation history is automatically loaded via loadMessagesWithHistory()
@@ -1145,7 +1167,54 @@ export class Agent<
                   });
                 }
               } else {
-                // No handoff - specialist is done, complete the task
+                // No handoff - specialist is done
+                // reserveFinalTurn: if agent produced no synthesis text, do one text-only call
+                if (
+                  !textAccumulated.trim() &&
+                  currentAgent.reserveFinalTurn
+                ) {
+                  logger.debug(
+                    "reserveFinalTurn: agent exhausted turns without synthesis, making text-only call",
+                    { agent: currentAgent.name },
+                  );
+
+                  const synthResult = await currentAgent.stream({
+                    messages: messagesToSend,
+                    executionContext: executionContext,
+                    textOnly: true,
+                    maxSteps: 1,
+                  } as any);
+
+                  const synthStream = synthResult.toUIMessageStream({
+                    sendReasoning,
+                    sendSources,
+                    sendFinish,
+                    sendStart,
+                    messageMetadata,
+                  });
+
+                  for await (const chunk of synthStream) {
+                    if (!chunk) continue;
+                    try {
+                      writer.write(chunk as any);
+                    } catch (error) {
+                      logger.error("Failed to write synthesis chunk", {
+                        error,
+                      });
+                    }
+                    if (chunk.type === "text-delta") {
+                      textAccumulated += chunk.delta;
+                    }
+                  }
+
+                  // Update conversation with synthesis text
+                  if (textAccumulated) {
+                    conversationMessages.push({
+                      role: "assistant",
+                      content: textAccumulated,
+                    });
+                  }
+                }
                 break;
               }
             }
