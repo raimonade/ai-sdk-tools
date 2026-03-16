@@ -1,5 +1,12 @@
 # @raimonade/devtools
 
+## 2.1.6
+
+### Patch Changes
+
+- a8ceb1b: Externalize zustand to fix "Dynamic require of react is not supported" during SSR. Zustand's CJS dep (use-sync-external-store) was being bundled into ESM dist and its require('react') call failed in Node ESM context.
+  - @raimonade/ai-sdk-tools-store@2.1.6
+
 ## 2.1.5
 
 ### Patch Changes
