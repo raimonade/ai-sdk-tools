@@ -1,5 +1,12 @@
 # @raimonade/devtools
 
+## 2.1.5
+
+### Patch Changes
+
+- e57aa5e: Add createRequire polyfill to ESM output so bundled CJS deps (use-sync-external-store) can require('react') during SSR.
+  - @raimonade/ai-sdk-tools-store@2.1.5
+
 ## 2.1.4
 
 ### Patch Changes
