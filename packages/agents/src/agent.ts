@@ -31,6 +31,7 @@ import {
   isHandoffResult,
 } from "./handoff.js";
 import { promptWithHandoffInstructions } from "./handoff-prompt.js";
+import { findBestMatch } from "./routing.js";
 import { AgentRunContext } from "./run-context.js";
 import {
   writeAgentStatus,
@@ -696,23 +697,8 @@ export class Agent<
             }
           } else if (strategy === "auto" && specialists.length > 0) {
             // Try programmatic classification
-            const matchedAgent = specialists.find((agent) => {
-              if (!agent.matchOn) return false;
-              if (typeof agent.matchOn === "function") {
-                return agent.matchOn(input);
-              }
-              if (Array.isArray(agent.matchOn)) {
-                return agent.matchOn.some((pattern) => {
-                  if (typeof pattern === "string") {
-                    return input.toLowerCase().includes(pattern.toLowerCase());
-                  }
-                  if (pattern instanceof RegExp) {
-                    return pattern.test(input);
-                  }
-                  return false;
-                });
-              }
-              return false;
+            const matchedAgent = findBestMatch(specialists, input, (agent) => {
+              return (agent as Agent<any>).matchOn;
             });
 
             if (matchedAgent) {
