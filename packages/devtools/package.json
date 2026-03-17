@@ -40,10 +40,18 @@
     "@ai-sdk/react": ">=2.0.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
-    "@raimonade/ai-sdk-tools-store": "workspace:^"
+    "@raimonade/ai-sdk-tools-store": "workspace:^",
+    "@xyflow/react": ">=12.0.0",
+    "dagre": ">=0.8.0"
   },
   "peerDependenciesMeta": {
     "@raimonade/ai-sdk-tools-store": {
+      "optional": true
+    },
+    "@xyflow/react": {
+      "optional": true
+    },
+    "dagre": {
       "optional": true
     }
   },

@@ -1,9 +1,6 @@
-import { createRequire } from "node:module";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "tsup";
-
-const require = createRequire(import.meta.url);
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -11,7 +8,7 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  splitting: false,
+  splitting: true,
   treeshake: true,
   minify: false,
   injectStyle: false, // Don't generate separate CSS files
@@ -21,6 +18,8 @@ export default defineConfig({
     "react/jsx-runtime",
     "@ai-sdk/react",
     "@raimonade/ai-sdk-tools-store",
+    "@xyflow/react",
+    "dagre",
     "zustand",
     "use-sync-external-store",
   ],
@@ -37,10 +36,8 @@ export default defineConfig({
   if (typeof document === 'undefined') return;
   if (document.getElementById('ai-devtools-styles')) return;
 
-  const CSS_CONTENT = \`${[
-    readFileSync(require.resolve("@xyflow/react/dist/style.css"), "utf-8"),
-    readFileSync(resolve(__dirname, "src/styles.css"), "utf-8"),
-  ].join("\\n").replace(/\`/g, "\\\`").replace(/\$/g, "\\$")}\`;
+  const CSS_CONTENT = \`${readFileSync(resolve(__dirname, "src/styles.css"), "utf-8")
+    .replace(/\`/g, "\\\`").replace(/\$/g, "\\$")}\`;
 
   const style = document.createElement('style');
   style.id = 'ai-devtools-styles';

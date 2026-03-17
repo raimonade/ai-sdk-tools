@@ -1,7 +1,5 @@
 "use client";
 
-export { AgentFlowVisualization } from "./components/agent-flow-visualization";
-export { AgentNode } from "./components/agent-node";
 export { AIDevtools } from "./components/ai-dev-tools";
 // Export other components for advanced usage
 export { DevtoolsButton } from "./components/devtools-button";
@@ -10,7 +8,6 @@ export { EventItem } from "./components/event-item";
 export { EventList } from "./components/event-list";
 export { StateDataExplorer } from "./components/state-data-explorer";
 export { StoreList } from "./components/store-list";
-export { ToolNode } from "./components/tool-node";
 
 // Hooks
 export { useAIDevtools } from "./hooks/use-ai-devtools";
@@ -20,14 +17,12 @@ export { useCurrentState } from "./hooks/use-current-state";
 export type {
   AgentFlowData,
   AgentHandoff,
-  AgentNode as AgentNodeData,
   AIEvent,
   AIEventType,
   ButtonPosition,
   DevtoolsConfig,
   FilterOptions,
   ToolCallSession,
-  ToolNode as ToolNodeData,
   UseAIDevtoolsOptions,
   UseAIDevtoolsReturn,
 } from "./types";

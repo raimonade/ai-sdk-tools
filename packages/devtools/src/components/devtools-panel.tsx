@@ -9,6 +9,8 @@ import {
   ViewSidebar as RightPanelIcon,
 } from "@mui/icons-material";
 import React, {
+  Suspense,
+  lazy,
   useCallback,
   useEffect,
   useMemo,
@@ -18,9 +20,14 @@ import React, {
 import { useCurrentState } from "../hooks/use-current-state";
 import type { AIEvent, DevtoolsConfig, FilterOptions } from "../types";
 import { formatToolName, getEventTypeIcon } from "../utils/formatting";
-import { AgentFlowVisualization } from "./agent-flow-visualization";
 import { EventList } from "./event-list";
 import { StateDataExplorer } from "./state-data-explorer";
+
+const AgentFlowVisualization = lazy(() =>
+  import("./agent-flow-visualization").then((m) => ({
+    default: m.AgentFlowVisualization,
+  })),
+);
 
 const EVENT_TYPES = [
   "tool-call-start",
@@ -770,7 +777,17 @@ export function DevtoolsPanel({
               <EventList events={filteredEvents} />
             </div>
           )}
-          {activeTab === "agents" && <AgentFlowVisualization events={events} />}
+          {activeTab === "agents" && (
+            <Suspense
+              fallback={
+                <div className="ai-devtools-loading">
+                  Loading agent flow...
+                </div>
+              }
+            >
+              <AgentFlowVisualization events={events} />
+            </Suspense>
+          )}
           {activeTab === "state" && isStoreAvailable && (
             <div className="ai-devtools-state-panel-full">
               <StateDataExplorer
