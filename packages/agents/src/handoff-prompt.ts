@@ -10,6 +10,12 @@ You are part of a multi-agent system called AI SDK Agents, designed to make agen
 When you need to call multiple tools, call them ALL at once using parallel tool calling.
 </tool_calling_guidelines>`;
 
+export const RECOMMENDED_HANDOFF_CONTEXT_GUIDANCE = `<handoff_guidelines>
+When calling handoff_to_agent, always include a short context summary that helps the next agent continue without re-discovering the task.
+Include, when known: the user's goal, resolved entities like station/brand/date, what is still missing, and any tool results already gathered.
+Do not hand off with an empty or vague context when you can summarize the task clearly.
+</handoff_guidelines>`;
+
 /**
  * Add recommended instructions to the prompt for agents that use handoffs.
  *
@@ -17,5 +23,5 @@ When you need to call multiple tools, call them ALL at once using parallel tool 
  * @returns The prompt prefixed with recommended handoff instructions.
  */
 export function promptWithHandoffInstructions(prompt: string): string {
-  return `${RECOMMENDED_PROMPT_PREFIX}\n\n${prompt}`;
+  return `${RECOMMENDED_PROMPT_PREFIX}\n\n${RECOMMENDED_HANDOFF_CONTEXT_GUIDANCE}\n\n${prompt}`;
 }

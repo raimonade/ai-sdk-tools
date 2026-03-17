@@ -143,6 +143,14 @@ export interface HandoffInputData {
   preHandoffItems: any[];
   /** New items generated during current turn (including tool results) */
   newItems: any[];
+  /** Structured handoff metadata from the previous agent */
+  handoff?: {
+    fromAgent?: string;
+    toAgent?: string;
+    reason?: string;
+    context?: string;
+    availableData?: Record<string, any>;
+  };
   /** Run context */
   runContext?: any;
 }
@@ -200,6 +208,15 @@ export type AgentEvent =
     }
   | { type: "agent-finish"; agent: string; round: number }
   | { type: "agent-handoff"; from: string; to: string; reason?: string }
+  | {
+      type: "agent-warning";
+      agent: string;
+      round: number;
+      code: "repeated-tool-call" | "no-text-turn";
+      message: string;
+      toolName?: string;
+      repeatedCount?: number;
+    }
   | { type: "agent-complete"; totalRounds: number }
   | { type: "agent-error"; error: Error }
   | { type: "tool-call"; agent: string; toolName: string; args: unknown }
@@ -385,6 +402,10 @@ export interface AgentDataParts {
       from?: string;
       to?: string;
       reason?: string;
+      code?: string;
+      message?: string;
+      toolName?: string;
+      repeatedCount?: number;
       round?: number;
       totalRounds?: number;
       toolCalls?: Array<{ toolName: string; title?: string; args: unknown }>;

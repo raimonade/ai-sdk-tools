@@ -543,6 +543,7 @@ export class Agent<
         const traceSteps: AgentDataParts["agent-trace"]["steps"] = [];
         // Tool title map — populated per-agent before streaming
         let toolTitles: Record<string, string | undefined> = {};
+        const toolCallCounts = new Map<string, number>();
         const originalOnEvent = onEvent;
         const onEventWithTrace = async (event: AgentEvent) => {
           const step: AgentDataParts["agent-trace"]["steps"][number] = {
@@ -554,6 +555,10 @@ export class Agent<
           if ("from" in event) step.from = event.from;
           if ("to" in event) step.to = event.to;
           if ("reason" in event) step.reason = event.reason;
+          if ("code" in event) step.code = event.code;
+          if ("message" in event) step.message = event.message;
+          if ("toolName" in event) step.toolName = event.toolName;
+          if ("repeatedCount" in event) step.repeatedCount = event.repeatedCount;
           if ("round" in event) step.round = event.round;
           if ("totalRounds" in event) step.totalRounds = event.totalRounds;
 
@@ -880,12 +885,27 @@ export class Agent<
               if (chunk.type === "tool-output-available") {
                 const toolName = toolCallNames.get(chunk.toolCallId);
                 if (toolName) {
+                  const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
+                  toolCallCounts.set(toolName, nextCount);
+
                   // Store tool result for handoff context
                   toolResults.set(toolName, chunk.output);
                   logger.debug(`Captured ${toolName}`, {
                     toolName,
                     outputType: typeof chunk.output,
                   });
+
+                  if (nextCount > 1) {
+                    await onEventWithTrace({
+                      type: "agent-warning",
+                      agent: currentAgent.name,
+                      round,
+                      code: "repeated-tool-call",
+                      message: `Tool ${toolName} produced output ${nextCount} times in this request`,
+                      toolName,
+                      repeatedCount: nextCount,
+                    });
+                  }
 
                   // Detect handoff
                   if (handoffToolNames.has(toolName)) {
@@ -959,6 +979,8 @@ export class Agent<
                   (a) => a.name === handoffData.targetAgent,
                 );
                 if (nextAgent) {
+                  const previousAgent = currentAgent;
+
                   // Apply handoff input filter if configured
                   const configuredHandoffs = this.getConfiguredHandoffs();
                   const configuredHandoff = configuredHandoffs.find(
@@ -979,6 +1001,13 @@ export class Agent<
                             result: result,
                           }),
                         ),
+                        handoff: {
+                          fromAgent: this.name,
+                          toAgent: handoffData.targetAgent,
+                          reason: handoffData.reason,
+                          context: handoffData.context,
+                          availableData: handoffData.availableData,
+                        },
                         runContext,
                       };
 
@@ -1010,6 +1039,13 @@ export class Agent<
                           result: result,
                         }),
                       ),
+                      handoff: {
+                        fromAgent: this.name,
+                        toAgent: handoffData.targetAgent,
+                        reason: handoffData.reason,
+                        context: handoffData.context,
+                        availableData: handoffData.availableData,
+                      },
                       runContext,
                     };
 
@@ -1085,6 +1121,8 @@ export class Agent<
                   (a) => a.name === handoffData.targetAgent,
                 );
                 if (nextAgent) {
+                  const previousAgent = currentAgent;
+
                   // Apply handoff input filter if configured
                   const configuredHandoffs = this.getConfiguredHandoffs();
                   const configuredHandoff = configuredHandoffs.find(
@@ -1098,6 +1136,13 @@ export class Agent<
                         inputHistory: conversationMessages.slice(0, -1), // All messages except the last assistant message
                         preHandoffItems: [], // No pre-handoff items for specialist-to-specialist
                         newItems: conversationMessages.slice(-1), // The last assistant message
+                        handoff: {
+                          fromAgent: previousAgent.name,
+                          toAgent: handoffData.targetAgent,
+                          reason: handoffData.reason,
+                          context: handoffData.context,
+                          availableData: handoffData.availableData,
+                        },
                         runContext,
                       };
 
@@ -1117,6 +1162,36 @@ export class Agent<
                       });
                       // Continue with original conversation messages as fallback
                     }
+                  } else {
+                    try {
+                      const defaultFilter = createDefaultInputFilter();
+                      const handoffInputData: HandoffInputData = {
+                        inputHistory: conversationMessages,
+                        preHandoffItems: [],
+                        newItems: Array.from(toolResults.entries()).map(
+                          ([name, result]) => ({
+                            toolName: name,
+                            result,
+                          }),
+                        ),
+                        handoff: {
+                          fromAgent: currentAgent.name,
+                          toAgent: handoffData.targetAgent,
+                          reason: handoffData.reason,
+                          context: handoffData.context,
+                          availableData: handoffData.availableData,
+                        },
+                        runContext,
+                      };
+
+                      const filteredData = defaultFilter(handoffInputData);
+                      conversationMessages.length = 0;
+                      conversationMessages.push(...filteredData.inputHistory);
+                    } catch (error) {
+                      logger.error("Error applying default handoff input filter", {
+                        error,
+                      });
+                    }
                   }
 
                   // Call onHandoff callback if configured
@@ -1129,7 +1204,6 @@ export class Agent<
                     }
                   }
 
-                  const previousAgent = currentAgent;
                   currentAgent = nextAgent;
 
                   // Write handoff to stream for devtools
@@ -1159,6 +1233,15 @@ export class Agent<
                   !textAccumulated.trim() &&
                   currentAgent.reserveFinalTurn
                 ) {
+                  await onEventWithTrace({
+                    type: "agent-warning",
+                    agent: currentAgent.name,
+                    round,
+                    code: "no-text-turn",
+                    message:
+                      "Agent completed its tool turn without producing synthesis text; running reserve final turn",
+                  });
+
                   logger.debug(
                     "reserveFinalTurn: agent exhausted turns without synthesis, making text-only call",
                     { agent: currentAgent.name },

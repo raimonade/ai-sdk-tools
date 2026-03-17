@@ -29,16 +29,27 @@ export class StreamInterceptor {
   }
 
   private shouldInterceptUrl(url: string): boolean {
-    // More flexible matching - check if URL contains any of the endpoints
-    // or if it's a chat-related endpoint
+    const debugLog = createDebugLogger(this.options.debug || false);
+
+    // Extract pathname for matching
+    let pathname: string;
+    try {
+      pathname = new URL(url, window.location.origin).pathname;
+    } catch {
+      pathname = url;
+    }
+
     const shouldIntercept = this.options.endpoints.some((endpoint) => {
-      // Direct match
-      if (url.includes(endpoint)) {
+      if (pathname.includes(endpoint)) {
         return true;
       }
-
       return false;
     });
+
+    debugLog(
+      false,
+      `[AI Devtools] URL check: ${pathname} → ${shouldIntercept ? "INTERCEPT" : "skip"}`,
+    );
 
     return shouldIntercept;
   }

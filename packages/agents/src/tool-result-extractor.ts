@@ -10,6 +10,32 @@ import { createLogger } from "@raimonade/ai-sdk-tools-debug";
 
 const logger = createLogger('TOOL_EXTRACTOR');
 
+function summarizeValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    const preview = value.slice(0, 2).map((item) => summarizeValue(item)).join("; ");
+    return preview ? `${value.length} items (${preview})` : `${value.length} items`;
+  }
+
+  if (typeof value === "string") {
+    return value.length > 240 ? `${value.slice(0, 237)}...` : value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  if (value && typeof value === "object") {
+    try {
+      const json = JSON.stringify(value);
+      return json.length > 240 ? `${json.slice(0, 237)}...` : json;
+    } catch {
+      return "[object]";
+    }
+  }
+
+  return String(value);
+}
+
 /**
  * Extract tool results from conversation messages
  */
@@ -79,7 +105,9 @@ export function createDefaultInputFilter(): (input: HandoffInputData) => Handoff
     });
     
     // Extract tool results from newItems
-    const toolResults: Record<string, any> = {};
+    const toolResults: Record<string, any> = {
+      ...(input.handoff?.availableData ?? {}),
+    };
     
     // Process newItems to extract tool results
     for (const item of input.newItems) {
@@ -112,45 +140,57 @@ export function createDefaultInputFilter(): (input: HandoffInputData) => Handoff
     
     logger.debug("Extracted tool results from newItems", { tools: Object.keys(toolResults) });
     
-    // Create a summary message with the available data
-    if (Object.keys(toolResults).length > 0) {
-      const dataSummary = Object.entries(toolResults)
-        .map(([key, value]) => {
-          // Generic data summary based on value type
-          if (Array.isArray(value)) {
-            return `Available ${key} data: ${value.length} items found`;
-          }
-          if (typeof value === 'object' && value !== null) {
-            return `Available ${key} data: ${JSON.stringify(value)}`;
-          }
-          return `Available ${key} data: ${value}`;
-        })
-        .join('\n');
-      
-      // Add a system message with the available data
-      const dataMessage: ModelMessage = {
-        role: 'system',
-        content: `Available data from previous agent:\n${dataSummary}\n\n**IMPORTANT**: Only use this data if it's DIRECTLY relevant to the current user question. If the user is asking about something different, ignore this data and call the appropriate tools.`
-      };
-      
-      // Ensure we keep the original conversation and add the data message
-      const enhancedHistory = [...input.inputHistory];
-      if (enhancedHistory.length === 0) {
-        // If no history, add a user message to maintain context
-        enhancedHistory.push({
-          role: 'user',
-          content: 'Please help with the request using the available data.'
-        });
+    const sections: string[] = [];
+
+    if (input.handoff?.fromAgent || input.handoff?.toAgent) {
+      sections.push("<handoff>");
+      if (input.handoff.fromAgent) {
+        sections.push(`from: ${input.handoff.fromAgent}`);
       }
-      enhancedHistory.push(dataMessage);
-      
-      return {
-        ...input,
-        inputHistory: enhancedHistory,
-      };
+      if (input.handoff.toAgent) {
+        sections.push(`to: ${input.handoff.toAgent}`);
+      }
+      if (input.handoff.reason) {
+        sections.push(`reason: ${input.handoff.reason}`);
+      }
+      if (input.handoff.context) {
+        sections.push(`context: ${input.handoff.context}`);
+      }
+      sections.push("</handoff>");
     }
-    
-    return input;
+
+    if (Object.keys(toolResults).length > 0) {
+      sections.push("<available_data>");
+      for (const [key, value] of Object.entries(toolResults)) {
+        sections.push(`${key}: ${summarizeValue(value)}`);
+      }
+      sections.push("</available_data>");
+    }
+
+    if (sections.length === 0) {
+      return input;
+    }
+
+    const dataMessage: ModelMessage = {
+      role: 'system',
+      content:
+        `${sections.join('\n')}\n\n` +
+        "Continue the same user request from this handoff context. Reuse available data before calling more tools. Only call new tools if the handoff context and available data are not enough to answer well.",
+    };
+
+    const enhancedHistory = [...input.inputHistory];
+    if (enhancedHistory.length === 0) {
+      enhancedHistory.push({
+        role: 'user',
+        content: 'Please continue the request using the handoff context.',
+      });
+    }
+    enhancedHistory.push(dataMessage);
+
+    return {
+      ...input,
+      inputHistory: enhancedHistory,
+    };
   };
 }
 
