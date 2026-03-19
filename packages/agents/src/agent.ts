@@ -1283,9 +1283,33 @@ export class Agent<
                     { agent: currentAgent.name },
                   );
 
+                  // Build synthesis messages that include the tool results.
+                  // messagesToSend was sliced before the round ran — it has the
+                  // user question but NOT the tool call/result pairs (those live
+                  // inside the AI SDK stream, never added to conversationMessages).
+                  // Inject them as an assistant message so Gemini can synthesize.
+                  const toolResultSummary = Array.from(toolResults.entries())
+                    .map(([name, result]) => {
+                      const text =
+                        typeof result === "object" && result !== null && "text" in result
+                          ? String(result.text)
+                          : typeof result === "string"
+                            ? result
+                            : JSON.stringify(result);
+                      return `[${name}]\n${text}`;
+                    })
+                    .join("\n\n");
+                  const synthMessages = [
+                    ...messagesToSend,
+                    {
+                      role: "assistant" as const,
+                      content: `I called these tools and got the following results:\n\n${toolResultSummary}\n\nNow I will synthesize this data into a clear answer.`,
+                    },
+                  ];
+
                   try {
                     const synthResult = await currentAgent.stream({
-                      messages: messagesToSend,
+                      messages: synthMessages,
                       executionContext: executionContext,
                       textOnly: true,
                       maxSteps: 1,
