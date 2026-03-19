@@ -264,10 +264,18 @@ export class Agent<
     // textOnly mode: strip all tools and append synthesis instruction
     if (textOnly) {
       systemPrompt +=
-        "\n\n<synthesis>\nIMPORTANT: Your tools have already been called. The results are in the conversation above. " +
-        "You MUST now write a complete response synthesizing the tool results: key findings, tables, comparisons, and actionable insights. " +
-        "Do NOT say you ran into a limit or could not summarize. Do NOT ask the user to repeat their question. " +
-        "Do NOT call any tools. Write the full answer using the data you already have.\n</synthesis>";
+        "\n\n<synthesis>\n" +
+        "CRITICAL INSTRUCTION — READ CAREFULLY:\n" +
+        "All tool calls are COMPLETE. Results are in the conversation above.\n" +
+        "You MUST write a FULL answer NOW. Use the tool results to create tables, insights, and analysis.\n" +
+        "ABSOLUTELY FORBIDDEN responses:\n" +
+        '- "I ran into a limit"\n' +
+        '- "I gathered data but couldn\'t summarize"\n' +
+        '- "Could you ask a more specific follow-up"\n' +
+        '- Any request for the user to repeat their question\n' +
+        "If data is incomplete, say what you found and what was missing. Partial answers are REQUIRED.\n" +
+        "</synthesis>";
+
     }
 
     // Resolve tools dynamically (static object or function)
@@ -314,11 +322,24 @@ export class Agent<
       ? { type: "tool" as const, toolName: toolChoice }
       : configuredToolChoice;
 
+    // In textOnly mode, reduce thinking budget for synthesis — just formatting, not deep analysis.
+    let effectiveSettings: Record<string, unknown> = otherSettings as Record<string, unknown>;
+    if (textOnly) {
+      effectiveSettings = { ...effectiveSettings };
+      const prov = effectiveSettings.providerOptions as Record<string, unknown> | undefined;
+      if (prov?.google) {
+        const g = prov.google as Record<string, unknown>;
+        if (g.thinkingConfig) {
+          effectiveSettings.providerOptions = { ...prov, google: { ...g, thinkingConfig: { thinkingBudget: 512 } } };
+        }
+      }
+    }
+
     const additionalOptions: Record<string, unknown> = {
       instructions: systemPrompt, // Override system prompt per call
       tools: resolvedTools, // Add resolved tools here
       toolChoice: effectiveToolChoice, // Pass toolChoice as top-level param
-      ...otherSettings, // Include other model settings
+      ...effectiveSettings, // Include other model settings (with reduced thinking for synthesis)
     };
 
     if (executionContext) {
@@ -1262,33 +1283,53 @@ export class Agent<
                     { agent: currentAgent.name },
                   );
 
-                  const synthResult = await currentAgent.stream({
-                    messages: messagesToSend,
-                    executionContext: executionContext,
-                    textOnly: true,
-                    maxSteps: 1,
-                  } as any);
+                  try {
+                    const synthResult = await currentAgent.stream({
+                      messages: messagesToSend,
+                      executionContext: executionContext,
+                      textOnly: true,
+                      maxSteps: 1,
+                    } as any);
 
-                  const synthStream = synthResult.toUIMessageStream({
-                    sendReasoning,
-                    sendSources,
-                    sendFinish,
-                    sendStart,
-                    messageMetadata,
-                  });
+                    const synthStream = synthResult.toUIMessageStream({
+                      sendReasoning,
+                      sendSources,
+                      sendFinish,
+                      sendStart,
+                      messageMetadata,
+                    });
 
-                  for await (const chunk of synthStream) {
-                    if (!chunk) continue;
+                    for await (const chunk of synthStream) {
+                      if (!chunk) continue;
+                      try {
+                        writer.write(chunk as any);
+                      } catch (error) {
+                        logger.error("Failed to write synthesis chunk", {
+                          error,
+                        });
+                      }
+                      if (chunk.type === "text-delta") {
+                        textAccumulated += chunk.delta;
+                      }
+                    }
+                  } catch (synthError) {
+                    logger.error(
+                      "reserveFinalTurn synthesis call failed, emitting fallback",
+                      { agent: currentAgent.name, error: synthError },
+                    );
+                    // Emit a fallback text so the user sees something
+                    const fallback =
+                      "I found the data above but encountered an error while composing my summary. " +
+                      "Please ask a follow-up question and I'll try again.";
                     try {
-                      writer.write(chunk as any);
-                    } catch (error) {
-                      logger.error("Failed to write synthesis chunk", {
-                        error,
-                      });
+                      writer.write({
+                        type: "text-delta",
+                        delta: fallback,
+                      } as any);
+                    } catch {
+                      // best-effort
                     }
-                    if (chunk.type === "text-delta") {
-                      textAccumulated += chunk.delta;
-                    }
+                    textAccumulated += fallback;
                   }
 
                   // Update conversation with synthesis text
