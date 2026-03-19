@@ -1,6 +1,6 @@
 {
   "name": "@raimonade/ai-sdk-tools",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Complete toolkit for building AI applications with the Vercel AI SDK - agents, state management, caching, artifacts, devtools, and memory",
   "keywords": [
     "ai",
