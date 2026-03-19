@@ -20,7 +20,7 @@ const defaultConfig: DevtoolsConfig = {
   theme: "auto",
   streamCapture: {
     enabled: true,
-    endpoint: "/chat",
+    endpoint: "/api/chat",
     autoConnect: true,
   },
   throttle: {

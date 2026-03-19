@@ -249,7 +249,7 @@ export function useAIDevtools(
   useEffect(() => {
     const streamConfig = streamCapture || {
       enabled,
-      endpoints: ["/chat"], // Matches any path containing /chat
+      endpoints: ["/api/chat"], // Exact match for most common endpoint
       autoConnect: true, // Always auto-connect by default
     };
 

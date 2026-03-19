@@ -116,6 +116,18 @@ export function writeSuggestions(
 }
 
 /**
+ * Write entity registrations as a transient data part.
+ * Consumed by stream transforms (e.g., entity ref injection) — not persisted in history.
+ */
+export function writeEntityRegistry(
+  writer: UIMessageStreamWriter,
+  entities: AgentDataParts["entity-registry"]["entities"],
+): void {
+  if (entities.length === 0) return;
+  writeDataPart(writer, "data-entity-registry", { entities }, { transient: true });
+}
+
+/**
  * Write the full agent execution trace as a non-transient data part.
  * Persists in message history for historical step inspection.
  */

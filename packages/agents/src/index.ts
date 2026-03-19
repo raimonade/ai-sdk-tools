@@ -39,6 +39,7 @@ export {
   writeAgentStatus,
   writeAgentTrace,
   writeDataPart,
+  writeEntityRegistry,
   writeRateLimit,
 } from "./streaming.js";
 // Types

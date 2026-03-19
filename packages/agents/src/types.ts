@@ -8,6 +8,7 @@ import type {
   StreamTextResult,
   Tool,
   UIMessage,
+  UIMessageChunk,
   UIMessageStreamOnFinishCallback,
   UIMessageStreamWriter,
 } from "ai";
@@ -344,8 +345,10 @@ export interface AgentStreamOptionsUI<
   }) => Record<string, unknown> | undefined;
 
   // AI SDK response options
-  /** AI SDK transform - stream transform function */
-  experimental_transform?: unknown;
+  /** Transform(s) applied to the UI message stream before sending the HTTP response. */
+  experimental_transform?:
+    | TransformStream<UIMessageChunk, UIMessageChunk>
+    | TransformStream<UIMessageChunk, UIMessageChunk>[];
   /** HTTP status code */
   status?: number;
   /** HTTP status text */
@@ -411,6 +414,10 @@ export interface AgentDataParts {
       toolCalls?: Array<{ toolName: string; title?: string; args: unknown }>;
       timestamp: number;
     }>;
+  };
+  /** Entity registrations from tools (transient — used by transforms, not persisted) */
+  "entity-registry": {
+    entities: Array<{ type: string; name: string; id: string }>;
   };
   // Allow extension with custom data parts
   [key: string]: unknown;

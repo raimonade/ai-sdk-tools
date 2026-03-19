@@ -264,9 +264,10 @@ export class Agent<
     // textOnly mode: strip all tools and append synthesis instruction
     if (textOnly) {
       systemPrompt +=
-        "\n\n<synthesis>\nYour tools have already been called and results are in the conversation. " +
-        "Analyze the results and provide a clear summary with key findings, comparisons, and insights. " +
-        "Do not attempt to call any tools — synthesize what you have.\n</synthesis>";
+        "\n\n<synthesis>\nIMPORTANT: Your tools have already been called. The results are in the conversation above. " +
+        "You MUST now write a complete response synthesizing the tool results: key findings, tables, comparisons, and actionable insights. " +
+        "Do NOT say you ran into a limit or could not summarize. Do NOT ask the user to repeat their question. " +
+        "Do NOT call any tools. Write the full answer using the data you already have.\n</synthesis>";
     }
 
     // Resolve tools dynamically (static object or function)
@@ -404,6 +405,7 @@ export class Agent<
       sendStart,
       messageMetadata,
       // Response options
+      experimental_transform,
       status,
       statusText,
       headers,
@@ -1228,9 +1230,22 @@ export class Agent<
                 }
               } else {
                 // No handoff - specialist is done
-                // reserveFinalTurn: if agent produced no synthesis text, do one text-only call
+                // reserveFinalTurn: if tools were called but no substantial synthesis text, do one text-only call
+                const hadToolCalls = toolCallCounts.size > 0;
+                const trimmedText = textAccumulated.trim();
+                const hasSubstantialText = trimmedText.length > 20;
+                logger.debug("reserveFinalTurn check", {
+                  agent: currentAgent.name,
+                  hadToolCalls,
+                  textLen: trimmedText.length,
+                  hasSubstantialText,
+                  reserveFinalTurn: currentAgent.reserveFinalTurn,
+                  textPreview: trimmedText.slice(0, 100),
+                  toolCallNames: [...toolCallCounts.keys()],
+                });
                 if (
-                  !textAccumulated.trim() &&
+                  hadToolCalls &&
+                  !hasSubstantialText &&
                   currentAgent.reserveFinalTurn
                 ) {
                   await onEventWithTrace({
@@ -1376,8 +1391,18 @@ export class Agent<
       },
     });
 
+    let outputStream: ReadableStream = stream;
+    if (experimental_transform) {
+      const transforms = Array.isArray(experimental_transform)
+        ? experimental_transform
+        : [experimental_transform];
+      for (const t of transforms) {
+        outputStream = outputStream.pipeThrough(t);
+      }
+    }
+
     const response = createUIMessageStreamResponse({
-      stream,
+      stream: outputStream as typeof stream,
       status,
       statusText,
       headers,
