@@ -781,11 +781,12 @@ export class Agent<
           }
 
           let round = 0;
-          const usedSpecialists = new Set<string>();
+          const specialistVisits = new Map<string, number>();
+          const MAX_SPECIALIST_VISITS = 2;
 
-          // If we used programmatic routing, mark specialist as used
+          // If we used programmatic routing, count first visit
           if (currentAgent !== this) {
-            usedSpecialists.add(currentAgent.name);
+            specialistVisits.set(currentAgent.name, 1);
           }
 
           while (round++ < maxRounds) {
@@ -849,9 +850,11 @@ export class Agent<
 
             // Track for orchestration
             let textAccumulated = "";
+            let postToolText = "";
+            let hasReceivedToolOutput = false;
             let handoffData: HandoffInstruction | null = null;
             const toolCallNames = new Map<string, string>(); // toolCallId -> toolName
-            const toolResults = new Map<string, any>(); // toolName -> result
+            const toolResultsList: Array<{ toolName: string; toolCallId: string; output: unknown }> = [];
             let hasStartedContent = false;
 
             // Optimize handoff detection with Set for O(1) lookups
@@ -923,8 +926,8 @@ export class Agent<
                   const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
                   toolCallCounts.set(toolName, nextCount);
 
-                  // Store tool result for handoff context
-                  toolResults.set(toolName, chunk.output);
+                  // Store tool result for handoff context and synthesis
+                  toolResultsList.push({ toolName, toolCallId: chunk.toolCallId, output: chunk.output });
                   logger.debug(`Captured ${toolName}`, {
                     toolName,
                     outputType: typeof chunk.output,
@@ -947,6 +950,10 @@ export class Agent<
                     handoffData = chunk.output as HandoffInstruction;
                     logger.debug("Handoff detected", handoffData);
                   }
+
+                  // Track post-tool text: reset so only text after LAST tool output counts
+                  hasReceivedToolOutput = true;
+                  postToolText = "";
                 }
               }
 
@@ -963,9 +970,12 @@ export class Agent<
                 }
               }
 
-              // Track text for conversation history
+              // Track text for conversation history and post-tool synthesis check
               if (chunk.type === "text-delta") {
                 textAccumulated += chunk.delta;
+                if (hasReceivedToolOutput) {
+                  postToolText += chunk.delta;
+                }
               }
             }
 
@@ -996,9 +1006,9 @@ export class Agent<
             // Handle orchestration flow
             if (currentAgent === this) {
               if (handoffData) {
-                // Check if this specialist has already been used
-                if (usedSpecialists.has(handoffData.targetAgent)) {
-                  // Don't route to the same specialist twice - task is complete
+                // Check if this specialist has exceeded visit limit
+                const visits = specialistVisits.get(handoffData.targetAgent) ?? 0;
+                if (visits >= MAX_SPECIALIST_VISITS) {
                   break;
                 }
 
@@ -1008,8 +1018,8 @@ export class Agent<
                   agent: this.name,
                 });
 
-                // Mark specialist as used and route to it
-                usedSpecialists.add(handoffData.targetAgent);
+                // Count visit and route to specialist
+                specialistVisits.set(handoffData.targetAgent, visits + 1);
                 const nextAgent = specialists.find(
                   (a) => a.name === handoffData.targetAgent,
                 );
@@ -1030,12 +1040,10 @@ export class Agent<
                       const handoffInputData: HandoffInputData = {
                         inputHistory: conversationMessages,
                         preHandoffItems: [],
-                        newItems: Array.from(toolResults.entries()).map(
-                          ([name, result]) => ({
-                            toolName: name,
-                            result: result,
-                          }),
-                        ),
+                        newItems: toolResultsList.map(({ toolName, output }) => ({
+                          toolName,
+                          result: output,
+                        })),
                         handoff: {
                           fromAgent: this.name,
                           toAgent: handoffData.targetAgent,
@@ -1068,12 +1076,10 @@ export class Agent<
                     const handoffInputData: HandoffInputData = {
                       inputHistory: conversationMessages,
                       preHandoffItems: [],
-                      newItems: Array.from(toolResults.entries()).map(
-                        ([name, result]) => ({
-                          toolName: name,
-                          result: result,
-                        }),
-                      ),
+                      newItems: toolResultsList.map(({ toolName, output }) => ({
+                        toolName,
+                        result: output,
+                      })),
                       handoff: {
                         fromAgent: this.name,
                         toAgent: handoffData.targetAgent,
@@ -1139,19 +1145,38 @@ export class Agent<
                 }
               } else {
                 // Orchestrator done, no more handoffs
+                const synthText = await this.runSynthesisTurn({
+                  currentAgent,
+                  toolCallCounts,
+                  toolResultsList,
+                  postToolText,
+                  textAccumulated,
+                  messagesToSend,
+                  executionContext: executionContext as Record<string, unknown>,
+                  writer,
+                  round,
+                  onEventWithTrace,
+                  streamOptions: { sendReasoning, sendSources, sendFinish, sendStart, messageMetadata },
+                });
+                if (synthText) {
+                  conversationMessages.push({
+                    role: "assistant",
+                    content: textAccumulated + synthText,
+                  });
+                }
                 break;
               }
             } else {
               // Specialist done
               if (handoffData) {
-                // Specialist handed off to another specialist
-                if (usedSpecialists.has(handoffData.targetAgent)) {
-                  // Already used this specialist - complete
+                // Specialist handed off — check visit limit
+                const specVisits = specialistVisits.get(handoffData.targetAgent) ?? 0;
+                if (specVisits >= MAX_SPECIALIST_VISITS) {
                   break;
                 }
 
-                // Route to next specialist
-                usedSpecialists.add(handoffData.targetAgent);
+                // Count visit and route to next specialist
+                specialistVisits.set(handoffData.targetAgent, specVisits + 1);
                 const nextAgent = specialists.find(
                   (a) => a.name === handoffData.targetAgent,
                 );
@@ -1203,12 +1228,10 @@ export class Agent<
                       const handoffInputData: HandoffInputData = {
                         inputHistory: conversationMessages,
                         preHandoffItems: [],
-                        newItems: Array.from(toolResults.entries()).map(
-                          ([name, result]) => ({
-                            toolName: name,
-                            result,
-                          }),
-                        ),
+                        newItems: toolResultsList.map(({ toolName, output }) => ({
+                          toolName,
+                          result: output,
+                        })),
                         handoff: {
                           fromAgent: currentAgent.name,
                           toAgent: handoffData.targetAgent,
@@ -1262,119 +1285,25 @@ export class Agent<
                   });
                 }
               } else {
-                // No handoff - specialist is done
-                // reserveFinalTurn: if tools were called but no substantial synthesis text, do one text-only call
-                const hadToolCalls = toolCallCounts.size > 0;
-                const trimmedText = textAccumulated.trim();
-                const hasSubstantialText = trimmedText.length > 20;
-                logger.debug("reserveFinalTurn check", {
-                  agent: currentAgent.name,
-                  hadToolCalls,
-                  textLen: trimmedText.length,
-                  hasSubstantialText,
-                  reserveFinalTurn: currentAgent.reserveFinalTurn,
-                  textPreview: trimmedText.slice(0, 100),
-                  toolCallNames: [...toolCallCounts.keys()],
+                // No handoff — specialist is done
+                const synthText = await this.runSynthesisTurn({
+                  currentAgent,
+                  toolCallCounts,
+                  toolResultsList,
+                  postToolText,
+                  textAccumulated,
+                  messagesToSend,
+                  executionContext: executionContext as Record<string, unknown>,
+                  writer,
+                  round,
+                  onEventWithTrace,
+                  streamOptions: { sendReasoning, sendSources, sendFinish, sendStart, messageMetadata },
                 });
-                if (
-                  hadToolCalls &&
-                  !hasSubstantialText &&
-                  currentAgent.reserveFinalTurn
-                ) {
-                  await onEventWithTrace({
-                    type: "agent-warning",
-                    agent: currentAgent.name,
-                    round,
-                    code: "no-text-turn",
-                    message:
-                      "Agent completed its tool turn without producing synthesis text; running reserve final turn",
+                if (synthText) {
+                  conversationMessages.push({
+                    role: "assistant",
+                    content: textAccumulated + synthText,
                   });
-
-                  logger.debug(
-                    "reserveFinalTurn: agent exhausted turns without synthesis, making text-only call",
-                    { agent: currentAgent.name },
-                  );
-
-                  // Build synthesis messages that include the tool results.
-                  // messagesToSend was sliced before the round ran — it has the
-                  // user question but NOT the tool call/result pairs (those live
-                  // inside the AI SDK stream, never added to conversationMessages).
-                  // Inject them as an assistant message so Gemini can synthesize.
-                  const toolResultSummary = Array.from(toolResults.entries())
-                    .map(([name, result]) => {
-                      const text =
-                        typeof result === "object" && result !== null && "text" in result
-                          ? String(result.text)
-                          : typeof result === "string"
-                            ? result
-                            : JSON.stringify(result);
-                      return `[${name}]\n${text}`;
-                    })
-                    .join("\n\n");
-                  const synthMessages = [
-                    ...messagesToSend,
-                    {
-                      role: "assistant" as const,
-                      content: `I called these tools and got the following results:\n\n${toolResultSummary}\n\nNow I will synthesize this data into a clear answer.`,
-                    },
-                  ];
-
-                  try {
-                    const synthResult = await currentAgent.stream({
-                      messages: synthMessages,
-                      executionContext: executionContext,
-                      textOnly: true,
-                      maxSteps: 1,
-                    } as any);
-
-                    const synthStream = synthResult.toUIMessageStream({
-                      sendReasoning,
-                      sendSources,
-                      sendFinish,
-                      sendStart,
-                      messageMetadata,
-                    });
-
-                    for await (const chunk of synthStream) {
-                      if (!chunk) continue;
-                      try {
-                        writer.write(chunk as any);
-                      } catch (error) {
-                        logger.error("Failed to write synthesis chunk", {
-                          error,
-                        });
-                      }
-                      if (chunk.type === "text-delta") {
-                        textAccumulated += chunk.delta;
-                      }
-                    }
-                  } catch (synthError) {
-                    logger.error(
-                      "reserveFinalTurn synthesis call failed, emitting fallback",
-                      { agent: currentAgent.name, error: synthError },
-                    );
-                    // Emit a fallback text so the user sees something
-                    const fallback =
-                      "I found the data above but encountered an error while composing my summary. " +
-                      "Please ask a follow-up question and I'll try again.";
-                    try {
-                      writer.write({
-                        type: "text-delta",
-                        delta: fallback,
-                      } as any);
-                    } catch {
-                      // best-effort
-                    }
-                    textAccumulated += fallback;
-                  }
-
-                  // Update conversation with synthesis text
-                  if (textAccumulated) {
-                    conversationMessages.push({
-                      role: "assistant",
-                      content: textAccumulated,
-                    });
-                  }
                 }
                 break;
               }
@@ -1486,6 +1415,160 @@ export class Agent<
     });
 
     return response;
+  }
+
+  /**
+   * Run a text-only synthesis turn when reserveFinalTurn is enabled and
+   * the agent produced tool results but no substantial post-tool text.
+   * Returns the synthesis text produced, or empty string if skipped.
+   */
+  private async runSynthesisTurn(opts: {
+    currentAgent: IAgent<any>;
+    toolCallCounts: Map<string, number>;
+    toolResultsList: Array<{ toolName: string; toolCallId: string; output: unknown }>;
+    postToolText: string;
+    textAccumulated: string;
+    messagesToSend: ModelMessage[];
+    executionContext: Record<string, unknown>;
+    writer: UIMessageStreamWriter;
+    round: number;
+    onEventWithTrace: (event: AgentEvent) => Promise<void>;
+    streamOptions: {
+      sendReasoning?: boolean;
+      sendSources?: boolean;
+      sendFinish?: boolean;
+      sendStart?: boolean;
+      messageMetadata?: (options: { part: unknown }) => Record<string, unknown> | undefined;
+    };
+  }): Promise<string> {
+    const {
+      currentAgent, toolCallCounts, toolResultsList, postToolText,
+      messagesToSend, executionContext, writer, round,
+      onEventWithTrace, streamOptions,
+    } = opts;
+
+    const hadToolCalls = toolCallCounts.size > 0;
+    const trimmedPostToolText = postToolText.trim();
+    const hasSubstantialText = trimmedPostToolText.length > 20;
+
+    logger.debug("reserveFinalTurn check", {
+      agent: currentAgent.name,
+      hadToolCalls,
+      postToolTextLen: trimmedPostToolText.length,
+      totalTextLen: opts.textAccumulated.trim().length,
+      hasSubstantialText,
+      reserveFinalTurn: currentAgent.reserveFinalTurn,
+      postToolPreview: trimmedPostToolText.slice(0, 100),
+      toolCallNames: [...toolCallCounts.keys()],
+    });
+
+    if (!hadToolCalls || hasSubstantialText || !currentAgent.reserveFinalTurn) {
+      return "";
+    }
+
+    await onEventWithTrace({
+      type: "agent-warning",
+      agent: currentAgent.name,
+      round,
+      code: "no-text-turn",
+      message:
+        "Agent completed its tool turn without producing synthesis text; running reserve final turn",
+    });
+
+    logger.debug(
+      "reserveFinalTurn: agent exhausted turns without synthesis, making text-only call",
+      { agent: currentAgent.name },
+    );
+
+    // Build synthesis messages: user question + tool results only.
+    // messagesToSend was sliced before the round ran — tool results
+    // live inside the AI SDK stream, never added to conversationMessages.
+    const toolResultSummary = toolResultsList
+      .map(({ toolName, output }) => {
+        const text =
+          typeof output === "object" && output !== null && "text" in output
+            ? String((output as Record<string, unknown>).text)
+            : typeof output === "string"
+              ? output
+              : JSON.stringify(output);
+        return `[${toolName}]\n${text}`;
+      })
+      .join("\n\n");
+
+    // Extract user question for focused synthesis
+    const lastUserMsg = [...messagesToSend].reverse().find(m => m.role === "user");
+    const userQuestion = lastUserMsg ? extractTextFromMessage(lastUserMsg) : "";
+
+    const synthMessages = [
+      ...(lastUserMsg ? [lastUserMsg] : messagesToSend.slice(0, 1)),
+      {
+        role: "assistant" as const,
+        content: `I called these tools and got the following results:\n\n${toolResultSummary}`,
+      },
+      {
+        role: "user" as const,
+        content: `Now write a complete answer to: ${userQuestion}`,
+      },
+    ];
+
+    let synthText = "";
+    const SYNTHESIS_TIMEOUT_MS = 15_000;
+
+    try {
+      const consumeSynthesis = async () => {
+        const synthResult = await currentAgent.stream({
+          messages: synthMessages,
+          executionContext,
+          textOnly: true,
+          maxSteps: 1,
+        } as any);
+
+        const synthStream = synthResult.toUIMessageStream(streamOptions);
+
+        for await (const chunk of synthStream) {
+          if (!chunk) continue;
+          try {
+            writer.write(chunk as any);
+          } catch (error) {
+            logger.error("Failed to write synthesis chunk", { error });
+          }
+          if (chunk.type === "text-delta") {
+            synthText += chunk.delta;
+          }
+        }
+      };
+
+      const timeout = new Promise<never>((_, reject) => {
+        setTimeout(
+          () => reject(new Error("Synthesis timed out")),
+          SYNTHESIS_TIMEOUT_MS,
+        );
+      });
+
+      await Promise.race([consumeSynthesis(), timeout]);
+    } catch (synthError) {
+      const isTimeout = synthError instanceof Error && synthError.message === "Synthesis timed out";
+      logger.error(
+        isTimeout
+          ? "reserveFinalTurn synthesis timed out, using partial text"
+          : "reserveFinalTurn synthesis call failed, emitting fallback",
+        { agent: currentAgent.name, error: synthError },
+      );
+      // If we got partial text before timeout, keep it; otherwise emit fallback
+      if (!synthText.trim()) {
+        const fallback =
+          "I found the data above but encountered an error while composing my summary. " +
+          "Please ask a follow-up question and I'll try again.";
+        try {
+          writer.write({ type: "text-delta", delta: fallback } as any);
+        } catch {
+          // best-effort
+        }
+        synthText = fallback;
+      }
+    }
+
+    return synthText;
   }
 
   /**
