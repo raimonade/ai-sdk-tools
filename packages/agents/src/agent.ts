@@ -1483,14 +1483,22 @@ export class Agent<
     // Build synthesis messages: user question + tool results only.
     // messagesToSend was sliced before the round ran — tool results
     // live inside the AI SDK stream, never added to conversationMessages.
+    const SYNTHESIS_TEXT_LIMIT = 3000;
     const toolResultSummary = toolResultsList
       .map(({ toolName, output }) => {
-        const text =
-          typeof output === "object" && output !== null && "text" in output
-            ? String((output as Record<string, unknown>).text)
-            : typeof output === "string"
-              ? output
-              : JSON.stringify(output);
+        let text: string;
+        if (typeof output === "object" && output !== null && "text" in output) {
+          text = String((output as Record<string, unknown>).text);
+        } else if (typeof output === "string") {
+          text = output;
+        } else {
+          // Truncate large JSON to prevent overwhelming synthesis with raw data.
+          // Tools should return a `text` property for clean synthesis summaries.
+          const json = JSON.stringify(output);
+          text = json.length > SYNTHESIS_TEXT_LIMIT
+            ? json.slice(0, SYNTHESIS_TEXT_LIMIT) + "\n[...truncated — tool should return a `text` property for synthesis]"
+            : json;
+        }
         return `[${toolName}]\n${text}`;
       })
       .join("\n\n");
