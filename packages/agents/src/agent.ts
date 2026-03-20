@@ -349,6 +349,18 @@ export class Agent<
     if (maxSteps) additionalOptions.maxSteps = maxSteps;
     if (onStepFinish) additionalOptions.onStepFinish = onStepFinish;
 
+    // Force text generation on the final step by setting toolChoice: 'none'.
+    // This maps to Google's functionCallingConfig.mode: "NONE" and prevents
+    // Gemini from consuming all steps with tool calls and never synthesizing.
+    if (maxSteps && maxSteps > 1 && !textOnly) {
+      additionalOptions.prepareStep = ({ stepNumber }: { stepNumber: number }) => {
+        if (stepNumber >= maxSteps - 1) {
+          return { toolChoice: "none" as const };
+        }
+        return {};
+      };
+    }
+
     // Handle simple { messages } format (like working code)
     if ("messages" in options && !("prompt" in options) && options.messages) {
       logger.debug(`Stream with messages only`, {
