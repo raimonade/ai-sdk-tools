@@ -7,6 +7,8 @@ import type {
   StepResult,
   StreamTextResult,
   Tool,
+  ToolCallRepairFunction,
+  ToolSet,
   UIMessage,
   UIMessageChunk,
   UIMessageStreamOnFinishCallback,
@@ -124,6 +126,11 @@ export interface AgentConfig<
   memory?: MemoryConfig;
   /** Number of last messages from memory thread to include in context (default: 10) */
   lastMessages?: number;
+  /**
+   * Attempts to repair a tool call that failed to parse (e.g. invalid args).
+   * Skips NoSuchToolError by default. Uses the model to fix malformed input.
+   */
+  repairToolCall?: ToolCallRepairFunction<ToolSet>;
 }
 
 export interface HandoffInstruction {

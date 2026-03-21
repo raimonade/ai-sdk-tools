@@ -39,17 +39,13 @@ export class StreamInterceptor {
       pathname = url;
     }
 
-    const shouldIntercept = this.options.endpoints.some((endpoint) => {
-      if (pathname.includes(endpoint)) {
-        return true;
-      }
-      return false;
-    });
-
-    debugLog(
-      false,
-      `[AI Devtools] URL check: ${pathname} → ${shouldIntercept ? "INTERCEPT" : "skip"}`,
+    const shouldIntercept = this.options.endpoints.some((endpoint) =>
+      pathname.includes(endpoint),
     );
+
+    if (shouldIntercept) {
+      debugLog(`[AI Devtools] URL match: ${pathname}`);
+    }
 
     return shouldIntercept;
   }

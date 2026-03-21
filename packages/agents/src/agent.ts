@@ -119,6 +119,9 @@ export class Agent<
       temperature: config.temperature,
       toolChoice: toolChoice as any, // Pass toolChoice as top-level param
       ...otherModelSettings,
+      ...(config.repairToolCall && {
+        experimental_repairToolCall: config.repairToolCall,
+      }),
     });
   }
 
@@ -479,7 +482,11 @@ export class Agent<
             }
 
             logger.debug(`Saving messages (files excluded from storage)`);
-            const serializedAssistant = JSON.stringify(assistantMsg);
+            const transform = this.memory?.history?.transformBeforeSave;
+            const assistantMsgToSave = transform
+              ? transform(assistantMsg)
+              : assistantMsg;
+            const serializedAssistant = JSON.stringify(assistantMsgToSave);
             const savedMessageCount =
               1 + (serializedAssistant.length > 0 ? 1 : 0);
 
@@ -1142,6 +1149,17 @@ export class Agent<
                     to: nextAgent.name,
                     reason: handoffData.reason,
                   });
+                } else {
+                  // Handoff target not found — emit error and stop
+                  logger.error("Handoff target not found in specialists", {
+                    targetAgent: handoffData.targetAgent,
+                    availableSpecialists: specialists.map((s) => s.name),
+                  });
+                  await onEventWithTrace({
+                    type: "agent-error",
+                    error: new Error(`Handoff target "${handoffData.targetAgent}" not found`),
+                  });
+                  break;
                 }
               } else {
                 // Orchestrator done, no more handoffs
@@ -1169,7 +1187,32 @@ export class Agent<
             } else {
               // Specialist done
               if (handoffData) {
-                // Specialist handed off — check visit limit
+                // Specialist handing back to the router (orchestrator)
+                if (handoffData.targetAgent === this.name) {
+                  const previousAgent = currentAgent;
+                  currentAgent = this;
+
+                  writer.write({
+                    type: "data-agent-handoff",
+                    data: {
+                      from: previousAgent.name,
+                      to: this.name,
+                      reason: handoffData.reason,
+                      routingStrategy: "llm",
+                    },
+                    transient: true,
+                  } as never);
+
+                  await onEventWithTrace({
+                    type: "agent-handoff",
+                    from: previousAgent.name,
+                    to: this.name,
+                    reason: handoffData.reason,
+                  });
+                  continue;
+                }
+
+                // Specialist handed off to peer — check visit limit
                 const specVisits = specialistVisits.get(handoffData.targetAgent) ?? 0;
                 if (specVisits >= MAX_SPECIALIST_VISITS) {
                   break;
@@ -1283,6 +1326,17 @@ export class Agent<
                     to: nextAgent.name,
                     reason: handoffData.reason,
                   });
+                } else {
+                  // Handoff target not found — emit error and stop
+                  logger.error("Specialist handoff target not found", {
+                    targetAgent: handoffData.targetAgent,
+                    availableSpecialists: specialists.map((s) => s.name),
+                  });
+                  await onEventWithTrace({
+                    type: "agent-error",
+                    error: new Error(`Handoff target "${handoffData.targetAgent}" not found`),
+                  });
+                  break;
                 }
               } else {
                 // No handoff — specialist is done

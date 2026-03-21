@@ -187,6 +187,11 @@ export interface MemoryConfig {
     enabled: boolean;
     /** Max messages to load */
     limit?: number;
+    /**
+     * Transform assistant messages before saving to history.
+     * Use to compact large tool results, strip transient data parts, etc.
+     */
+    transformBeforeSave?: (message: unknown) => unknown;
   };
 
   /** Chat session management and title generation */
