@@ -107,7 +107,9 @@ function startFreezeDetector({
   }
 }
 
-if (typeof window !== "undefined") {
+// Only start in debug mode — the rAF loop prevents Chrome from batching
+// viewport changes during resize, causing per-frame style recalculations.
+if (typeof window !== "undefined" && debug.isEnabled) {
   startFreezeDetector({ thresholdMs: 80 });
 }
 

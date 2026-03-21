@@ -42,6 +42,10 @@ class DebugLogger {
     }
   }
 
+  get isEnabled(): boolean {
+    return this.enabled;
+  }
+
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
   }
