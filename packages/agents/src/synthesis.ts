@@ -125,6 +125,10 @@ export async function runSynthesisTurn(opts: SynthesisTurnOptions): Promise<stri
   const userQuestion = lastUserMsg
     ? extractTextFromMessage(lastUserMsg)
     : "";
+  const synthLang = executionContext._synthesisLanguage as string | undefined;
+  const synthUserPrompt = synthLang
+    ? `Now write a complete answer in ${synthLang} to: ${userQuestion}`
+    : `Now write a complete answer to: ${userQuestion}`;
 
   const synthMessages = [
     ...(lastUserMsg ? [lastUserMsg] : messagesToSend.slice(0, 1)),
@@ -134,7 +138,7 @@ export async function runSynthesisTurn(opts: SynthesisTurnOptions): Promise<stri
     },
     {
       role: "user" as const,
-      content: `Now write a complete answer to: ${userQuestion}`,
+      content: synthUserPrompt,
     },
   ];
 

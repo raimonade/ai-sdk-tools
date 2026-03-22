@@ -266,10 +266,12 @@ export class Agent<
 
     // textOnly mode: strip all tools and append synthesis instruction
     if (textOnly) {
+      const synthLang = (executionContext as Record<string, unknown>)._synthesisLanguage as string | undefined;
       systemPrompt +=
         "\n\n<synthesis>\n" +
         "CRITICAL INSTRUCTION — READ CAREFULLY:\n" +
         "All tool calls are COMPLETE. Results are in the conversation above.\n" +
+        (synthLang ? `Respond in the same language as the user's message. Default language: ${synthLang}. Do NOT switch language based on tool result content.\n` : "") +
         "You MUST write a FULL answer NOW. Use the tool results to create tables, insights, and analysis.\n" +
         "ABSOLUTELY FORBIDDEN responses:\n" +
         '- "I ran into a limit"\n' +
@@ -1560,6 +1562,10 @@ export class Agent<
     // Extract user question for focused synthesis
     const lastUserMsg = [...messagesToSend].reverse().find(m => m.role === "user");
     const userQuestion = lastUserMsg ? extractTextFromMessage(lastUserMsg) : "";
+    const synthLang = executionContext._synthesisLanguage as string | undefined;
+    const synthUserPrompt = synthLang
+      ? `Now write a complete answer in ${synthLang} to: ${userQuestion}`
+      : `Now write a complete answer to: ${userQuestion}`;
 
     const synthMessages = [
       ...(lastUserMsg ? [lastUserMsg] : messagesToSend.slice(0, 1)),
@@ -1569,7 +1575,7 @@ export class Agent<
       },
       {
         role: "user" as const,
-        content: `Now write a complete answer to: ${userQuestion}`,
+        content: synthUserPrompt,
       },
     ];
 
