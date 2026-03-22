@@ -29,6 +29,13 @@ export {
   type UseChatOptions,
   useChat,
 } from "./use-chat";
+// Message part grouping utilities
+export {
+  type AssistantRenderItem,
+  groupThinkingStepParts,
+  isThinkingStepActive,
+  type ThinkingStepPart,
+} from "./group-thinking-steps";
 // Data parts hooks
 export {
   type DataPart,
