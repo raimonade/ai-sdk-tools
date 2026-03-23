@@ -288,28 +288,40 @@ export class KyselyProvider<
 
       if (updated) return;
 
-      await rawInsert(
-        trx,
-        table,
-        [
-          columns.chatId,
-          columns.userId,
-          columns.title,
-          columns.summary,
-          columns.createdAt,
-          columns.updatedAt,
-          columns.messageCount,
-        ],
-        [
-          chat.chatId,
-          chat.userId ?? null,
-          titleToStore,
-          summaryToStore,
-          chat.createdAt,
-          chat.updatedAt,
-          chat.messageCount,
-        ],
-      );
+      try {
+        await rawInsert(
+          trx,
+          table,
+          [
+            columns.chatId,
+            columns.userId,
+            columns.title,
+            columns.summary,
+            columns.createdAt,
+            columns.updatedAt,
+            columns.messageCount,
+          ],
+          [
+            chat.chatId,
+            chat.userId ?? null,
+            titleToStore,
+            summaryToStore,
+            chat.createdAt,
+            chat.updatedAt,
+            chat.messageCount,
+          ],
+        );
+      } catch (err) {
+        const updatedRetry = await rawUpdateById(trx, table, columns.chatId, chat.chatId, [
+          [columns.userId, chat.userId ?? null],
+          [columns.title, titleToStore],
+          [columns.summary, summaryToStore],
+          [columns.updatedAt, chat.updatedAt],
+          [columns.messageCount, chat.messageCount],
+        ]);
+        if (updatedRetry) return;
+        throw err;
+      }
     });
   }
 
