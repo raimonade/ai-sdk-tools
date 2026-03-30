@@ -312,6 +312,8 @@ export interface AgentStreamOptionsUI<
   maxSteps?: number;
   /** Global timeout (ms) */
   timeout?: number;
+  /** Max times a single specialist can be visited (default 2) */
+  maxSpecialistVisits?: number;
   /** Direct agent selection - bypasses triage routing */
   agentChoice?: string;
   /** Tool preference - routes to agent with this tool and hints to use it */

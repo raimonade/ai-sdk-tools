@@ -427,6 +427,7 @@ export class Agent<
       strategy = "auto",
       maxRounds = 5,
       maxSteps = 10,
+      maxSpecialistVisits: maxSpecialistVisitsOption,
       context,
       agentChoice,
       toolChoice,
@@ -791,7 +792,7 @@ export class Agent<
 
           let round = 0;
           const specialistVisits = new Map<string, number>();
-          const MAX_SPECIALIST_VISITS = 2;
+          const MAX_SPECIALIST_VISITS = maxSpecialistVisitsOption ?? 2;
 
           // If we used programmatic routing, count first visit
           if (currentAgent !== this) {
