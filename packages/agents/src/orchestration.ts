@@ -50,6 +50,7 @@ export async function consumeAgentStream(opts: {
     output: unknown;
   }> = [];
   const toolCallCounts = new Map<string, number>();
+  const seenToolOutputIds = new Set<string>();
   let hasStartedContent = false;
 
   for await (const chunk of uiStream) {
@@ -108,28 +109,42 @@ export async function consumeAgentStream(opts: {
     if (chunk.type === "tool-output-available") {
       const toolName = toolCallNames.get(chunk.toolCallId);
       if (toolName) {
-        const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
-        toolCallCounts.set(toolName, nextCount);
+        const isDuplicateToolOutput = seenToolOutputIds.has(chunk.toolCallId);
+        if (!isDuplicateToolOutput) {
+          seenToolOutputIds.add(chunk.toolCallId);
 
-        toolResultsList.push({
-          toolName,
-          toolCallId: chunk.toolCallId,
-          output: chunk.output,
-        });
-        logger.debug(`Captured ${toolName}`, {
-          toolName,
-          outputType: typeof chunk.output,
-        });
+          const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
+          toolCallCounts.set(toolName, nextCount);
 
-        if (nextCount > 1) {
-          await onEventWithTrace({
-            type: "agent-warning",
-            agent: currentAgentName,
-            round,
-            code: "repeated-tool-call",
-            message: `Tool ${toolName} produced output ${nextCount} times in this request`,
+          toolResultsList.push({
             toolName,
-            repeatedCount: nextCount,
+            toolCallId: chunk.toolCallId,
+            output: chunk.output,
+          });
+          logger.debug(`Captured ${toolName}`, {
+            toolName,
+            outputType: typeof chunk.output,
+          });
+
+          if (nextCount > 1) {
+            await onEventWithTrace({
+              type: "agent-warning",
+              agent: currentAgentName,
+              round,
+              code: "repeated-tool-call",
+              message: `Tool ${toolName} produced output ${nextCount} times in this request`,
+              toolName,
+              repeatedCount: nextCount,
+            });
+          }
+
+          // Track post-tool text: reset so only text after LAST unique tool output counts
+          hasReceivedToolOutput = true;
+          postToolText = "";
+        } else {
+          logger.debug(`Skipping duplicate ${toolName} output chunk`, {
+            toolName,
+            toolCallId: chunk.toolCallId,
           });
         }
 
@@ -138,10 +153,6 @@ export async function consumeAgentStream(opts: {
           handoffData = chunk.output as HandoffInstruction;
           logger.debug("Handoff detected", handoffData);
         }
-
-        // Track post-tool text: reset so only text after LAST tool output counts
-        hasReceivedToolOutput = true;
-        postToolText = "";
       }
     }
 

@@ -865,6 +865,7 @@ export class Agent<
             let handoffData: HandoffInstruction | null = null;
             const toolCallNames = new Map<string, string>(); // toolCallId -> toolName
             const toolResultsList: Array<{ toolName: string; toolCallId: string; output: unknown }> = [];
+            const seenToolOutputIds = new Set<string>();
             let hasStartedContent = false;
 
             // Optimize handoff detection with Set for O(1) lookups
@@ -933,25 +934,39 @@ export class Agent<
               if (chunk.type === "tool-output-available") {
                 const toolName = toolCallNames.get(chunk.toolCallId);
                 if (toolName) {
-                  const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
-                  toolCallCounts.set(toolName, nextCount);
+                  const isDuplicateToolOutput = seenToolOutputIds.has(chunk.toolCallId);
+                  if (!isDuplicateToolOutput) {
+                    seenToolOutputIds.add(chunk.toolCallId);
 
-                  // Store tool result for handoff context and synthesis
-                  toolResultsList.push({ toolName, toolCallId: chunk.toolCallId, output: chunk.output });
-                  logger.debug(`Captured ${toolName}`, {
-                    toolName,
-                    outputType: typeof chunk.output,
-                  });
+                    const nextCount = (toolCallCounts.get(toolName) ?? 0) + 1;
+                    toolCallCounts.set(toolName, nextCount);
 
-                  if (nextCount > 1) {
-                    await onEventWithTrace({
-                      type: "agent-warning",
-                      agent: currentAgent.name,
-                      round,
-                      code: "repeated-tool-call",
-                      message: `Tool ${toolName} produced output ${nextCount} times in this request`,
+                    // Store tool result for handoff context and synthesis
+                    toolResultsList.push({ toolName, toolCallId: chunk.toolCallId, output: chunk.output });
+                    logger.debug(`Captured ${toolName}`, {
                       toolName,
-                      repeatedCount: nextCount,
+                      outputType: typeof chunk.output,
+                    });
+
+                    if (nextCount > 1) {
+                      await onEventWithTrace({
+                        type: "agent-warning",
+                        agent: currentAgent.name,
+                        round,
+                        code: "repeated-tool-call",
+                        message: `Tool ${toolName} produced output ${nextCount} times in this request`,
+                        toolName,
+                        repeatedCount: nextCount,
+                      });
+                    }
+
+                    // Track post-tool text: reset so only text after LAST unique tool output counts
+                    hasReceivedToolOutput = true;
+                    postToolText = "";
+                  } else {
+                    logger.debug(`Skipping duplicate ${toolName} output chunk`, {
+                      toolName,
+                      toolCallId: chunk.toolCallId,
                     });
                   }
 
@@ -960,10 +975,6 @@ export class Agent<
                     handoffData = chunk.output as HandoffInstruction;
                     logger.debug("Handoff detected", handoffData);
                   }
-
-                  // Track post-tool text: reset so only text after LAST tool output counts
-                  hasReceivedToolOutput = true;
-                  postToolText = "";
                 }
               }
 
